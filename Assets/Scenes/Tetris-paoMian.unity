@@ -130,10 +130,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1006142144}
     m_Modifications:
-    - target: {fileID: 6720980514442589533, guid: daa561fba20fd064da1308accde95e3d, type: 3}
-      propertyPath: m_Text
-      value: 88888
-      objectReference: {fileID: 0}
     - target: {fileID: 6720980514596298660, guid: daa561fba20fd064da1308accde95e3d, type: 3}
       propertyPath: m_Name
       value: InfoBar
