@@ -128,7 +128,7 @@ public class TetrisCore : IGamePhase
         {
             if(input.horizontal != 0)
                 offset.x += (input.horizontal > 0) ? 1 : -1;
-            if(input.vertical != 0 && (input.vertical) * player.y_director > 0)
+            if (input.vertical != 0 && (input.vertical) * player.y_director > 0)
             {
                 offset.y = player.y_director;
                 player.curr_time = 0;
