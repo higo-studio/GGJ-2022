@@ -6,6 +6,10 @@ public struct PlayerInput
     public float vertical;
     public bool applyRotate;
     public bool IsValid => horizontal != 0 || vertical != 0 || applyRotate;
+    public override string ToString()
+    {
+        return $"H: {horizontal}, V: {vertical}, R: {applyRotate}";
+    }
 }
 public enum Role
 {
