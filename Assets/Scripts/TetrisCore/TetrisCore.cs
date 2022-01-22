@@ -25,7 +25,6 @@ public struct PlayerHandle
 public struct TraverseCube
 {
     public bool is_valid;           //是否已遍历
-    public bool part_of_mainland;   //是否邻接大面积方块
 }
 
 //图搜索用的岛屿
@@ -33,10 +32,13 @@ public struct Island
 {
     public List<Vector2Int> tcubes;
     public Role color;
+    public bool part_of_mainland;   //是否邻接大面积方块
+
     public Island(Role _color)
     {
         tcubes = new List<Vector2Int>();
         color = _color;
+        part_of_mainland = false;
     }
 }
 
@@ -295,7 +297,6 @@ public class TetrisCore : IGamePhase
         int traverse_y_size = top - bottom + 1;
         //搜索白色岛屿
         TraverseCube[,] tcubes_white = new TraverseCube[size.x, traverse_y_size];
-                Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : " + traverse_y_size);
         List<Island> white_islands = new List<Island>();
         for(int y = 0; y < traverse_y_size; ++y)
         {
@@ -307,10 +308,33 @@ public class TetrisCore : IGamePhase
                 {
                     Island island = new Island(Role.White);
                     TraverseIsland(x, y, bottom, traverse_y_size, in cubes[x, bottom + y].color, ref tcubes_white, ref island);
+                    if(!island.part_of_mainland)
+                        white_islands.Add(island);
                 }
                 tcubes_white[x, y].is_valid = true;
             }
         }
+        Debug.Log("White Island Count : " + white_islands.ToArray().Length);
+        //搜索黑色岛屿
+        TraverseCube[,] tcubes_black = new TraverseCube[size.x, traverse_y_size];
+        List<Island> black_islands = new List<Island>();
+        for(int y = 0; y < traverse_y_size; ++y)
+        {
+            for(int x = 0; x < size.x; ++x)
+            {
+                if(tcubes_black[x, y].is_valid)           //已遍历则不再遍历
+                    continue;
+                if(cubes[x, bottom + y].color == Role.Black)    //搜索到岛屿
+                {
+                    Island island = new Island(Role.Black);
+                    TraverseIsland(x, y, bottom, traverse_y_size, in cubes[x, bottom + y].color, ref tcubes_black, ref island);
+                    if(!island.part_of_mainland)
+                        black_islands.Add(island);
+                }
+                tcubes_black[x, y].is_valid = true;
+            }
+        }
+        Debug.Log("Black Island Count : " + black_islands.ToArray().Length);
         return false;
     }
 
@@ -330,12 +354,12 @@ public class TetrisCore : IGamePhase
             if(color == Role.Black)
             {
                 if(y >= y_size - 1)
-                    tcubes[x, y].part_of_mainland = true;
+                    island.part_of_mainland = true;
             }
             else
             {
                 if(y <= 0)
-                    tcubes[x, y].part_of_mainland = true;
+                    island.part_of_mainland = true;
             }
             //深度遍历
             int[] x_offset = { 0, 0, 1, -1};
