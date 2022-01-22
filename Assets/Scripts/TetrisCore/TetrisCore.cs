@@ -224,6 +224,15 @@ public class TetrisCore : IGamePhase
     //填充/吃
     private bool Filling()
     {
+        Debug.Log("Filling!!!!!!!!!!");
+        white_player.tetromino_data.color = Role.White;
+        black_player.tetromino_data.color = Role.Black;
+        for(int i = 0; i < 4; ++i){
+            Vector2Int positionW = white_player.tetromino_data.position + white_player.tetromino_data.cells[i];
+            Vector2Int positionB = black_player.tetromino_data.position + black_player.tetromino_data.cells[i];
+            cubes[positionW.x, positionW.y].color = white_player.tetromino_data.color;
+            cubes[positionB.x, positionB.y].color = black_player.tetromino_data.color;
+        }
         return false;
     }
 
