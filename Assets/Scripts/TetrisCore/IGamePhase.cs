@@ -2,15 +2,17 @@ using UnityEngine;
 
 public struct PlayerInput
 {
-    public int horizontal;
-    public int vertical;
+    public float horizontal;
+    public float vertical;
     public bool applyRotate;
     public bool IsValid => horizontal != 0 || vertical != 0 || applyRotate;
 }
 public enum Role
 {
-    Black = 0,
-    White = 1
+    Black,
+    White,
+    FexiableBlack,
+    FixiableWhite
 }
 
 public interface IGamePhase

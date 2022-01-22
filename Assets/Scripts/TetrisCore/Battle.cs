@@ -46,6 +46,6 @@ public class Battle : MonoBehaviour
 
     private void UpdateInput()
     {
-
+        inputs[0].horizontal = Input.GetAxisRaw("Horizontal");
     }
 }

@@ -2,12 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System;
+
+[Serializable]
+public struct TileCollection
+{
+    public TileBase[] tiles;
+}
 
 public class TBoard : MonoBehaviour
 {
     public Tilemap Tilemap;
-    public TileBase WhiteTile;
-    public TileBase BlackTile;
+    //public TileBase WhiteTile;
+    //public TileBase BlackTile;
+    //public TileBase FexiableWhiteTile;
+    //public TileBase FixiableBlackTile;
+    public TileCollection tileCollection;
     public bool FlipX;
     public bool FlipY;
 
@@ -29,14 +39,8 @@ public class TBoard : MonoBehaviour
 
     TileBase GetTile(Role role)
     {
-        switch (role)
-        {
-            case Role.White:
-                return WhiteTile;
-            case Role.Black:
-                return BlackTile;
-            default:
-                return null;
-        }
+        var idx = (int)role;
+        if (idx > tileCollection.tiles.Length || idx < 0) return null;
+        return tileCollection.tiles[idx];
     }
 }
