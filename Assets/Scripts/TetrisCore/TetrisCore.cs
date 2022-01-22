@@ -388,8 +388,10 @@ public class TetrisCore : IGamePhase
                 cubes[pos.x, pos.y].color = Role.White;   
             }
         }
-        if(white_islands.Count > 0 || black_islands.Count > 0)
+        if (white_islands.Count > 0 || black_islands.Count > 0)
             Sinking(ref white_islands, ref black_islands);
+        else
+            NewRound();
         return false;
     }
 
