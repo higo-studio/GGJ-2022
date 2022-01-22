@@ -76,7 +76,7 @@ public class Board : MonoBehaviour
         for (int i = 0; i < piece.cells.Length; i++)
         {
             Vector3Int tilePosition = piece.cells[i] + piece.position;
-            this.tilemap.SetTile(tilePosition, piece.data.tile);
+            //this.tilemap.SetTile(tilePosition, piece.data.tile);
         }
     }
 

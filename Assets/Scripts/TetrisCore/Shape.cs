@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Data_
+public static class Data
 {
     public static readonly float cos = Mathf.Cos(Mathf.PI / 2f);
     public static readonly float sin = Mathf.Sin(Mathf.PI / 2f);
@@ -50,5 +50,27 @@ public static class Data_
         { Tetromino.T, WallKicksJLOSTZ },
         { Tetromino.Z, WallKicksJLOSTZ },
     };
+
+}
+
+public enum Tetromino
+{
+    I, J, L, O, S, T, Z
+}
+
+[System.Serializable]
+public struct TetrominoData
+{
+    public Tetromino tetromino;
+    public Vector2Int[] cells { get; private set; }
+    public Vector2Int[,] wallKicks { get; private set; }
+    public Vector2Int position;
+    public bool on_ground;
+
+    public void Initialize()
+    {
+        this.cells = Data.Cells[this.tetromino];
+        this.wallKicks = Data.WallKicks[this.tetromino];
+    }
 
 }

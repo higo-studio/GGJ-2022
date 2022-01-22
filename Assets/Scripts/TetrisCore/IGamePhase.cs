@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public struct PlayerInput
 {
     public int horizontal;
@@ -7,14 +9,12 @@ public struct PlayerInput
 }
 public enum Role
 {
-    Black,
-    White
+    Black = 0,
+    White = 1
 }
 
 public interface IGamePhase
 {
-    void Init(float step);
-    // 0
-    // ÖðÖ¡µ÷ÓÃ
-    void Update(float time, PlayerInput[] input, out int[,] cells);
+    public void Init(float step, Vector2Int size);
+    public void Update(float time, PlayerInput[] input, ref int[,] cells);
 }
