@@ -288,13 +288,14 @@ public class TetrisCore : IGamePhase
                 break;
             black_complete_line++;
         }
-        Debug.Log("Black Line : " + black_complete_line + "     White Line : " + white_complete_line);
+
         //界线附近的区域
         int top = 20 - white_complete_line;
         int bottom = black_complete_line - 1;
         int traverse_y_size = top - bottom + 1;
         //搜索白色岛屿
         TraverseCube[,] tcubes_white = new TraverseCube[size.x, traverse_y_size];
+                Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! : " + traverse_y_size);
         List<Island> white_islands = new List<Island>();
         for(int y = 0; y < traverse_y_size; ++y)
         {
@@ -302,20 +303,49 @@ public class TetrisCore : IGamePhase
             {
                 if(tcubes_white[x, y].is_valid)           //已遍历则不再遍历
                     continue;
-                tcubes_white[x, y].is_valid = true;
                 if(cubes[x, bottom + y].color == Role.White)    //搜索到岛屿
                 {
                     Island island = new Island(Role.White);
-                    TraverseIsland(x, y, top, bottom, in cubes[x, bottom + y].color, ref island);
+                    TraverseIsland(x, y, bottom, traverse_y_size, in cubes[x, bottom + y].color, ref tcubes_white, ref island);
                 }
+                tcubes_white[x, y].is_valid = true;
             }
         }
         return false;
     }
 
-    private void TraverseIsland(int x, int y, int top, int bottom, in Role color, ref Island island)
+    private void TraverseIsland(int x, int y, int bottom, int y_size, in Role color, ref TraverseCube[,] tcubes, ref Island island)
     {
-        
+        if(x >= size.x || x < 0 || y >= y_size || y < 0)
+        {
+            return;
+        }
+        if(tcubes[x, y].is_valid){
+            return;
+        }
+        tcubes[x, y].is_valid = true;
+        if(cubes[x, y + bottom].color == color)
+        {
+            //是否邻接大陆
+            if(color == Role.Black)
+            {
+                if(y >= y_size - 1)
+                    tcubes[x, y].part_of_mainland = true;
+            }
+            else
+            {
+                if(y <= 0)
+                    tcubes[x, y].part_of_mainland = true;
+            }
+            //深度遍历
+            int[] x_offset = { 0, 0, 1, -1};
+            int[] y_offset = { 1, -1, 0, 0};
+            island.tcubes.Add(new Vector2Int(x, y + bottom));
+            for(int i = 0; i < 4; ++i)
+            {
+                TraverseIsland(x + x_offset[i], y + y_offset[i], bottom, y_size, in color, ref tcubes, ref island);
+            }
+        }
     }
 
     //下沉
