@@ -38,21 +38,21 @@ public class TetrisCore : IGamePhase
         this.size = size;
         //初始化方块场景
         cubes = new Cube[size.x, size.y];
-        for(int i = 0; i < size.x / 2; ++i)
+        for(int i = 0; i < size.y / 2; ++i)
         {
-            for(int n = 0; n < size.y; ++n)
+            for(int n = 0; n < size.x; ++n)
             {
-                cubes[i, n] = (new Cube() {
+                cubes[n, i] = (new Cube() {
                     color = Role.White,
                     is_background = true
                 });
             }
         }
-        for(int i = size.x / 2; i < size.x; ++i)
+        for(int i = size.y / 2; i < size.y; ++i)
         {
-            for(int n = 0; n < size.y; ++n)
+            for(int n = 0; n < size.x; ++n)
             {
-                cubes[i, n] = (new Cube() {
+                cubes[n, i] = (new Cube() {
                     color = Role.Black,
                     is_background = true
                 });
