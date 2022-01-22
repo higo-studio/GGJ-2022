@@ -21,6 +21,7 @@ public class TBoard : MonoBehaviour
     public bool FlipX;
     public bool FlipY;
     public TimeLerp timelerp;
+    public Tilemap NextTilemap;
 
     public void RefreshScore(int score)
     {

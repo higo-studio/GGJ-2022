@@ -8,9 +8,11 @@ public class Battle : MonoBehaviour
     public float Step = 1f;
     public TBoard[] Boards;
     public int[] Scores;
+    public Tilemap[] NextTilemaps;
     IGamePhase core = new TetrisCore();
 
     private Role[,] RenderCells;
+    private TetrominoData[] NextTDatas;
     private PlayerInput[] inputs;
 
     public RectInt Bounds
@@ -25,6 +27,7 @@ public class Battle : MonoBehaviour
     private void Awake()
     {
         Scores = new int[2];
+        NextTDatas = new TetrominoData[2];
         RenderCells = new Role[MapSize.x, MapSize.y];
         inputs = new PlayerInput[2];
         core.Init(Step, MapSize);
@@ -37,7 +40,7 @@ public class Battle : MonoBehaviour
 
     private void FixedUpdate()
     {
-        core.Update(Time.fixedDeltaTime, inputs, ref RenderCells);
+        core.Update(Time.fixedDeltaTime, inputs, ref RenderCells, ref NextTDatas);
 
         Scores[0] = 0;
         Scores[1] = 0;
@@ -62,24 +65,57 @@ public class Battle : MonoBehaviour
             b.RefreshTile(RenderCells, Bounds, MapSize);
             b.RefreshScore(Scores[i]);
         }
+
+        RefreshNextView();
         inputs[0] = default;
         inputs[1] = default;
     }
 
     private void UpdateInput()
     {
-        inputs[0].horizontal = Input.GetAxisRaw("Horizontal");
-        inputs[0].vertical = -Input.GetAxisRaw("Vertical");
+        inputs[1].horizontal = Input.GetAxisRaw("Horizontal");
+        inputs[1].vertical = -Input.GetAxisRaw("Vertical");
         if (Input.GetButtonUp("Rotate"))
+        {
+            inputs[1].applyRotate = true;
+        }
+
+        inputs[0].horizontal = Input.GetAxisRaw("Horizontal1");
+        inputs[0].vertical = -Input.GetAxisRaw("Vertical1");
+        if (Input.GetButtonUp("Rotate1"))
         {
             inputs[0].applyRotate = true;
         }
+    }
 
-        inputs[1].horizontal = Input.GetAxisRaw("Horizontal1");
-        inputs[1].vertical = -Input.GetAxisRaw("Vertical1");
-        if (Input.GetButtonUp("Rotate1"))
+    private void RefreshNextView()
+    {
+        var n0 = NextTilemaps[0];
+        var n1 = NextTilemaps[1];
+
+        var d0 = NextTDatas[0];
+        var d1 = NextTDatas[1];
+
+        var b0 = Boards[0];
+        var b1 = Boards[1];
+
+        n0.ClearAllTiles();
+        n1.ClearAllTiles();
+
+        //n0.SetTile(Vector3Int.zero, b0.tileCollection.tiles[(int)Role.Black]);
+        //n1.SetTile(Vector3Int.zero, b1.tileCollection.tiles[(int)Role.Black]);
+        for (var i = 0; i < d0.cells.Length; i++)
         {
-            inputs[1].applyRotate = true;
+            var cell = d0.cells[i];
+            var pos = new Vector3Int(cell.x - 1, cell.y - 1, 0);
+            n0.SetTile(pos, b0.tileCollection.tiles[(int)Role.FexiableBlack]);
+        }
+
+        for (var i = 0; i < d1.cells.Length; i++)
+        {
+            var cell = d1.cells[i];
+            var pos = new Vector3Int(cell.x - 1, cell.y - 1, 0);
+            n1.SetTile(pos, b1.tileCollection.tiles[(int)Role.FixiableWhite]);
         }
     }
 }

@@ -12,6 +12,7 @@ public struct PlayerHandle
 {
     public const float CD_DURATION = 0.3f;
     public TetrominoData tetromino_data;
+    public TetrominoData next_tetromino_data;
     public float curr_time;
     public float input_cd_time;
     public int y_director;
@@ -98,7 +99,7 @@ public class TetrisCore : IGamePhase
     }
 
     //每帧被调用
-    public void Update(float time, PlayerInput[] input, ref Role[,] cells)
+    public void Update(float time, PlayerInput[] input, ref Role[,] cells, ref TetrominoData[] nextTDatas)
     {
         //move & rotate
         if(black_player.IsMoveable() && input[(int)Role.Black].IsValid)
@@ -136,6 +137,9 @@ public class TetrisCore : IGamePhase
                 cells[i,n] = cubes[i, n].color;
             }
         }
+
+        nextTDatas[0] = black_player.next_tetromino_data;
+        nextTDatas[1] = white_player.next_tetromino_data;
     }
 
     //move rotates
@@ -181,36 +185,57 @@ public class TetrisCore : IGamePhase
         
     }
 
-    //新的一轮
-    private void NewRound()
+    void GenTData(out TetrominoData wd, out TetrominoData bd)
     {
-        Debug.Log("New Round");
         Tetromino white_t = (Tetromino)Random.Range(0, 7);
         Tetromino black_t = (Tetromino)Random.Range(0, 7);
         //去冲突
-        while(Data.Conflict[white_t].ContainsKey(black_t))
+        while (Data.Conflict[white_t].ContainsKey(black_t))
         {
-           black_t = (Tetromino)Random.Range(0, 7);
+            black_t = (Tetromino)Random.Range(0, 7);
         }
-        TetrominoData white_data = new TetrominoData(){
+        wd = new TetrominoData()
+        {
             position = new Vector2Int(size.x / 2, size.y - 4),
             color = Role.FixiableWhite,
             tetromino = white_t,
             on_ground = false
         };
-        white_data.Initialize();
-        white_player.tetromino_data = white_data;
-        TetrominoData black_data = new TetrominoData(){
+        wd.Initialize();
+        //
+        bd = new TetrominoData()
+        {
             //position  color  tetromino  onground
             position = new Vector2Int(size.x / 2, 4),
             color = Role.FexiableBlack,
             tetromino = black_t,
             on_ground = false
         };
-        black_data.Initialize();
-        black_player.tetromino_data = black_data;
+        bd.Initialize();
+    }
+
+    //新的一轮
+    private void NewRound()
+    {
+        Debug.Log("New Round");
+        if (!white_player.next_tetromino_data.Valid)
+        {
+            GenTData(out var next_white_data, out var next_black_data);
+            white_player.next_tetromino_data = next_white_data;
+            black_player.next_tetromino_data = next_black_data;
+        }
+
+        white_player.tetromino_data = white_player.next_tetromino_data;
+        black_player.tetromino_data = black_player.next_tetromino_data;
+
         white_player.curr_time = 0;
         black_player.curr_time = 0;
+
+        GenTData(out var white_data, out var black_data);
+        white_player.next_tetromino_data = white_data;
+        black_player.next_tetromino_data = black_data;
+
+
         Vector2Int white_pos = white_player.tetromino_data.position;
         for(int i = 0; i < 4; ++i){
             Vector2Int position = white_pos + white_player.tetromino_data.cells[i];
