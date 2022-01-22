@@ -77,6 +77,7 @@ public struct TetrominoData
     public Vector2Int position;
     public Role color;
     public bool on_ground;
+    public bool Valid => this.cells != null && this.wallKicks != null;
 
     public void Initialize()
     {
