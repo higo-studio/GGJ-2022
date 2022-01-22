@@ -366,7 +366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dac61ce5541c154c9ffa741eaa09720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapSize: {x: 10, y: 20}
+  MapSize: {x: 10, y: 30}
   Step: 1
   Boards:
   - {fileID: 1887623655}
