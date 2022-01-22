@@ -51,11 +51,21 @@ public static class Data
         { Tetromino.Z, WallKicksJLOSTZ },
     };
 
+    public static readonly Dictionary<Tetromino, Dictionary<Tetromino, bool>> Conflict = new Dictionary<Tetromino, Dictionary<Tetromino, bool>>()
+    {
+        { Tetromino.I, new Dictionary<Tetromino, bool>{ {Tetromino.I, false} } },
+        { Tetromino.J, new Dictionary<Tetromino, bool>{ {Tetromino.J, false}, {Tetromino.L, false} } },
+        { Tetromino.L, new Dictionary<Tetromino, bool>{ {Tetromino.J, false}, {Tetromino.L, false} } },
+        { Tetromino.O, new Dictionary<Tetromino, bool>{ {Tetromino.O, false} } },
+        { Tetromino.S, new Dictionary<Tetromino, bool>{ {Tetromino.S, false}, {Tetromino.Z, false} } },
+        { Tetromino.T, new Dictionary<Tetromino, bool>{ {Tetromino.T, false} } },
+        { Tetromino.Z, new Dictionary<Tetromino, bool>{ {Tetromino.S, false}, {Tetromino.Z, false} } },
+    };
 }
 
 public enum Tetromino
 {
-    I, J, L, O, S, T, Z
+    I = 0, J = 1, L = 2, O = 3, S = 4, T = 5, Z = 6
 }
 
 [System.Serializable]

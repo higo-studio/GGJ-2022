@@ -662,7 +662,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dac61ce5541c154c9ffa741eaa09720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapSize: {x: 10, y: 20}
+  MapSize: {x: 10, y: 30}
   Tilemap: {fileID: 564011156}
   Step: 1
   WhiteTile: {fileID: 11400000, guid: aa44b5216a5f39e4881c5323564afe81, type: 2}
@@ -729,7 +729,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 10, y: 20}
+  m_Size: {x: 10, y: 30}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
