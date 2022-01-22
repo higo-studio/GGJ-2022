@@ -1,11 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 struct Cube
 {
     public Role color;
     public bool is_background;    
+}
+
+public struct PlayerHandle
+{
+    public TetrominoData tetromino_data;
+    public float curr_time;
+    public int y_director;
+    public bool IsMoveable()
+    {
+        return !tetromino_data.on_ground;
+    }
 }
 
 // 俄罗斯方块的主要逻辑
@@ -16,14 +28,15 @@ public class TetrisCore : IGamePhase
     private float curr_normal_time = 0;
     private Vector2Int size;
     private List<List<Cube>> cubes;
-    Tetromino black_tetromino;
-    Tetromino white_tetromino;
+    PlayerHandle black_player;
+    PlayerHandle white_player;
 
     //初始化 平分地图
     public void Init(float step, Vector2Int size)
     {
         step_time = step;
         this.size = size;
+        //初始化方块场景
         cubes = new List<List<Cube>>(size.y);
         for(int i = 0; i < size.y / 2; ++i)
         {
@@ -49,6 +62,15 @@ public class TetrisCore : IGamePhase
             }
             cubes[i] = line;
         }
+        //初始化player handle
+        black_player = new PlayerHandle(){
+            curr_time = 0,
+            y_director = 1
+        };
+        black_player = new PlayerHandle(){
+            curr_time = 0,
+            y_director = -1
+        };
     }
 
     public void SetStepTime(float time)
@@ -59,15 +81,16 @@ public class TetrisCore : IGamePhase
     //每帧被调用
     public void Update(float time, PlayerInput[] input, ref int[,] cells)
     {
-        curr_normal_time += time;
-        if(input[(int)Role.Black].IsValid)
+        //move & rotate
+        if(black_player.IsMoveable() && input[(int)Role.Black].IsValid)
         {
-            TetrominoMove(ref input[0], 1);
+            TetrominoMoveRotate(ref input[0], ref black_player);
         }
-        if(input[(int)Role.White].IsValid)
+        if(white_player.IsMoveable() && input[(int)Role.White].IsValid)
         {
-            TetrominoMove(ref input[1], -1);
+            TetrominoMoveRotate(ref input[1], ref white_player);
         }
+        
         //为渲染提供矩阵
         for(int i = 0; i < size.y; ++i)
         {
@@ -78,9 +101,25 @@ public class TetrisCore : IGamePhase
         }
     }
 
-    public void TetrominoMove(ref PlayerInput input, int director)
+    //move rotates
+    public void TetrominoMoveRotate(ref PlayerInput input, ref PlayerHandle player)
     {
-        
+        //move
+        Vector2Int offset = Vector2Int.zero;
+        if(input.horizontal != 0)
+            offset.x += (input.horizontal > 0) ? 1 : -1;
+        if(input.vertical != 0 && (input.vertical) * player.y_director > 0)
+        {
+            offset.y = player.y_director;
+            player.curr_time = 0;
+        }
+        player.tetromino_data.position += offset;
+        if(IsTetrominoGround(ref player)){
+            player.tetromino_data.on_ground = true;
+            return;
+        }
+        //rotate
+
     }
 
     //新的一轮
@@ -104,6 +143,23 @@ public class TetrisCore : IGamePhase
     //下沉
     private bool Sinking()
     {
+        return false;
+    }
+
+    //判断触底
+    private bool IsTetrominoGround(ref PlayerHandle player)
+    {
+        for(int i = 0; i < 4; ++i)
+        {
+            Vector2Int cur_position = player.tetromino_data.cells[i];
+            if((cubes[cur_position.x][cur_position.y].color == player.tetromino_data.color &&
+                cubes[cur_position.x][cur_position.y].is_background) ||
+                (cubes[cur_position.x][cur_position.y].color != player.tetromino_data.color &&
+                !cubes[cur_position.x][cur_position.y].is_background))
+            {
+                return true;
+            }
+        }
         return false;
     }
 }
