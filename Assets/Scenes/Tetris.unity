@@ -562,7 +562,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!156049354 &1253872412
 Grid:
   m_ObjectHideFlags: 0
@@ -679,20 +679,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tetrominoes:
-  - tile: {fileID: 11400000, guid: aa44b5216a5f39e4881c5323564afe81, type: 2}
-    tetromino: 0
-  - tile: {fileID: 11400000, guid: f6c4109fd0d185b419e5e665b07c42f0, type: 2}
-    tetromino: 1
-  - tile: {fileID: 11400000, guid: 89eae29ecf56ea14c8b3927213a00066, type: 2}
-    tetromino: 2
-  - tile: {fileID: 11400000, guid: 66df2645ff909154b9c8f7c006a6af32, type: 2}
-    tetromino: 3
-  - tile: {fileID: 11400000, guid: ae5c5dcd9d2744248ba2beb6b8dab80f, type: 2}
-    tetromino: 4
-  - tile: {fileID: 11400000, guid: 8316c87896e7b6448a324d8a66e43174, type: 2}
-    tetromino: 5
-  - tile: {fileID: 11400000, guid: be0a34e2a842ae742b4fa8541a5f9fcf, type: 2}
-    tetromino: 6
+  - tetromino: 0
+    position: {x: 0, y: 0}
+    color: 0
+    on_ground: 0
+  - tetromino: 1
+    position: {x: 0, y: 0}
+    color: 0
+    on_ground: 0
+  - tetromino: 2
+    position: {x: 0, y: 0}
+    color: 0
+    on_ground: 0
+  - tetromino: 3
+    position: {x: 0, y: 0}
+    color: 0
+    on_ground: 0
+  - tetromino: 4
+    position: {x: 0, y: 0}
+    color: 0
+    on_ground: 0
+  - tetromino: 5
+    position: {x: 0, y: 0}
+    color: 0
+    on_ground: 0
+  - tetromino: 6
+    position: {x: 0, y: 0}
+    color: 0
+    on_ground: 0
   boardSize: {x: 10, y: 20}
   spawnPosition: {x: -1, y: 8, z: 0}
   previewPosition: {x: -1, y: 12, z: 0}
