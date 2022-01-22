@@ -4,11 +4,9 @@ using UnityEngine.Tilemaps;
 public class Battle : MonoBehaviour
 {
     public Vector2Int MapSize;
-    public Tilemap Tilemap;
     [Range(0.5f, 2f)]
     public float Step = 1f;
-    public TileBase WhiteTile;
-    public TileBase BlackTile;
+    public TBoard[] Boards;
     IGamePhase core = new TetrisCore();
 
     private Role[,] RenderCells;
@@ -38,7 +36,10 @@ public class Battle : MonoBehaviour
     private void FixedUpdate()
     {
         core.Update(Time.fixedDeltaTime, inputs, ref RenderCells);
-        RefreshTile();
+        foreach(var b in Boards)
+        {
+            b.RefreshTile(RenderCells, Bounds, MapSize);
+        }
         inputs[0] = default;
         inputs[1] = default;
     }
@@ -46,32 +47,5 @@ public class Battle : MonoBehaviour
     private void UpdateInput()
     {
 
-    }
-
-    void RefreshTile()
-    {
-        var anthor = Bounds.position;
-        Tilemap.ClearAllTiles();
-        for (var i = 0; i < MapSize.x; i++)
-        {
-            for (var j = 0; j < MapSize.y; j++)
-            {
-                var role = RenderCells[i, j];
-                Tilemap.SetTile(new Vector3Int(i + anthor.x, j + anthor.y, 0), GetTile(role));
-            }
-        }
-    }
-
-    TileBase GetTile(Role role)
-    {
-        switch (role)
-        {
-            case Role.White:
-                return WhiteTile;
-            case Role.Black:
-                return BlackTile;
-            default:
-                return null;
-        }
     }
 }

@@ -73,3 +73,8 @@ crashlytics-build.properties
 .vsconfig
 .vscode
 .vscode/
+ProjectSettings/AutoStreamingSettings.asset
+ProjectSettings/SceneTemplateSettings.json
+Packages/packages-lock.json
+ProjectSettings/PackageManagerSettings.asset
+ProjectSettings/ProjectVersion.txt
