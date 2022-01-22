@@ -562,7 +562,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!156049354 &1253872412
 Grid:
   m_ObjectHideFlags: 0
@@ -603,8 +603,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tile: {fileID: 11400000, guid: a10927dec698b7c49b1375f89e8db4d2, type: 2}
-  mainBoard: {fileID: 1887623656}
-  trackingPiece: {fileID: 1887623655}
+  mainBoard: {fileID: 0}
+  trackingPiece: {fileID: 0}
 --- !u!1 &1887623652
 GameObject:
   m_ObjectHideFlags: 0
@@ -615,7 +615,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1887623654}
   - component: {fileID: 1887623653}
-  - component: {fileID: 1887623656}
   - component: {fileID: 1887623655}
   m_Layer: 0
   m_Name: Board
@@ -660,49 +659,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1887623652}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6570178d836e8642a13a0b983600cf3, type: 3}
+  m_Script: {fileID: 11500000, guid: 7dac61ce5541c154c9ffa741eaa09720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stepDelay: 1
-  moveDelay: 0.1
-  lockDelay: 0.5
---- !u!114 &1887623656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1887623652}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d4fe201741a0f14c82a9ce960b9f5e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tetrominoes:
-  - tetromino: 0
-    position: {x: 0, y: 0}
-    on_ground: 0
-  - tetromino: 1
-    position: {x: 0, y: 0}
-    on_ground: 0
-  - tetromino: 2
-    position: {x: 0, y: 0}
-    on_ground: 0
-  - tetromino: 3
-    position: {x: 0, y: 0}
-    on_ground: 0
-  - tetromino: 4
-    position: {x: 0, y: 0}
-    on_ground: 0
-  - tetromino: 5
-    position: {x: 0, y: 0}
-    on_ground: 0
-  - tetromino: 6
-    position: {x: 0, y: 0}
-    on_ground: 0
-  boardSize: {x: 10, y: 20}
-  spawnPosition: {x: -1, y: 8, z: 0}
-  previewPosition: {x: -1, y: 12, z: 0}
+  MapSize: {x: 10, y: 20}
+  Tilemap: {fileID: 564011156}
+  Step: 1
 --- !u!1 &2144466704
 GameObject:
   m_ObjectHideFlags: 0
