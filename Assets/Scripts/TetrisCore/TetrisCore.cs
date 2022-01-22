@@ -27,7 +27,7 @@ public class TetrisCore : IGamePhase
     public float step_time { get; private set; }
     private float curr_normal_time = 0;
     private Vector2Int size;
-    private List<List<Cube>> cubes;
+    private Cube[,] cubes;
     PlayerHandle black_player;
     PlayerHandle white_player;
 
@@ -37,30 +37,26 @@ public class TetrisCore : IGamePhase
         step_time = step;
         this.size = size;
         //初始化方块场景
-        cubes = new List<List<Cube>>(size.y);
-        for(int i = 0; i < size.y / 2; ++i)
+        cubes = new Cube[size.x, size.y];
+        for(int i = 0; i < size.x / 2; ++i)
         {
-            List<Cube> line = new List<Cube>(size.x);
-            for(int n = 0; n < size.x; ++n)
+            for(int n = 0; n < size.y; ++n)
             {
-                line[n] = (new Cube() {
+                cubes[i, n] = (new Cube() {
                     color = Role.White,
                     is_background = true
                 });
             }
-            cubes[i] = line;
         }
-        for(int i = size.y / 2; i < size.y; ++i)
+        for(int i = size.x / 2; i < size.x; ++i)
         {
-            List<Cube> line = new List<Cube>(size.x);
-            for(int n = 0; n < size.x; ++n)
+            for(int n = 0; n < size.y; ++n)
             {
-                line[n] = (new Cube() {
+                cubes[i, n] = (new Cube() {
                     color = Role.Black,
                     is_background = true
                 });
             }
-            cubes[i] = line;
         }
         //初始化player handle
         black_player = new PlayerHandle(){
@@ -71,6 +67,7 @@ public class TetrisCore : IGamePhase
             curr_time = 0,
             y_director = -1
         };
+        NewRound();
     }
 
     public void SetStepTime(float time)
@@ -90,13 +87,25 @@ public class TetrisCore : IGamePhase
         {
             TetrominoMoveRotate(ref input[1], ref white_player);
         }
-        
+        //step
+        black_player.curr_time += time;
+        white_player.curr_time += time;
+        if(black_player.IsMoveable() && black_player.curr_time >= step_time)
+        {
+            black_player.curr_time -= step_time;
+            Step(black_player);
+        }
+        if(white_player.IsMoveable() && white_player.curr_time >= step_time)
+        {
+            white_player.curr_time -= step_time;
+            Step(white_player);
+        }
         //为渲染提供矩阵
         for(int i = 0; i < size.y; ++i)
         {
             for(int n = 0; n < size.x; ++n)
             {
-                cells[i,n] = (int)cubes[i][n].color;
+                cells[i,n] = (int)cubes[i, n].color;
             }
         }
     }
@@ -129,7 +138,7 @@ public class TetrisCore : IGamePhase
     }
 
     //每一个“下落”的周期调用，判断是否触底
-    private bool Step()
+    private bool Step(PlayerHandle player)
     {
         return false;
     }
@@ -152,10 +161,10 @@ public class TetrisCore : IGamePhase
         for(int i = 0; i < 4; ++i)
         {
             Vector2Int cur_position = player.tetromino_data.cells[i];
-            if((cubes[cur_position.x][cur_position.y].color == player.tetromino_data.color &&
-                cubes[cur_position.x][cur_position.y].is_background) ||
-                (cubes[cur_position.x][cur_position.y].color != player.tetromino_data.color &&
-                !cubes[cur_position.x][cur_position.y].is_background))
+            if((cubes[cur_position.x, cur_position.y].color == player.tetromino_data.color &&
+                cubes[cur_position.x, cur_position.y].is_background) ||
+                (cubes[cur_position.x, cur_position.y].color != player.tetromino_data.color &&
+                !cubes[cur_position.x, cur_position.y].is_background))
             {
                 return true;
             }
