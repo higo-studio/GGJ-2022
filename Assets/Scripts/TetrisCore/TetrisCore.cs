@@ -463,26 +463,32 @@ public class TetrisCore : IGamePhase
         {   
             for(int i = 0; i < island.tcubes.Count; ++i)
             {
-                cubes[island.tcubes[i].x, island.tcubes[i].y].color = reverse_color;
-                var pos = island.tcubes[i];
-                pos.y += y_director;
-                island.tcubes[i] = pos;
-                cubes[island.tcubes[i].x, island.tcubes[i].y].color = color;
-            }
-            for(int i = 0; i < island.tcubes.Count; ++i)
-            {
+                Vector2Int next_pos = island.tcubes[i];
+                next_pos.y += y_director;
                 switch(color)
                 {
-                    case Role.Black: ground = (island.tcubes[i].y >= 20); break;
-                    case Role.White: ground = (island.tcubes[i].y < 0); break;
+                    case Role.Black: ground = (next_pos.y >= 20); break;
+                    case Role.White: ground = (next_pos.y < 0); break;
                 }
                 if(ground)
                     break;
-                if(cubes[island.tcubes[i].x, island.tcubes[i].y].color == color)
+                if(cubes[next_pos.x, next_pos.y].color == color)
                 {
                     ground = true;
                     break;
                 }
+            }
+
+            for(int i = 0; i < island.tcubes.Count; ++i)
+            {
+                cubes[island.tcubes[i].x, island.tcubes[i].y].color = reverse_color;
+                var pos = island.tcubes[i];
+                pos.y += y_director;
+                island.tcubes[i] = pos;
+            }
+            for(int i = 0; i < island.tcubes.Count; ++i)
+            {
+                cubes[island.tcubes[i].x, island.tcubes[i].y].color = color;
             }
         }
         
