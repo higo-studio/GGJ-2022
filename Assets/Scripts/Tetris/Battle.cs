@@ -7,6 +7,7 @@ public class Battle : MonoBehaviour
     [Range(0.5f, 2f)]
     public float Step = 1f;
     public TBoard[] Boards;
+    public int[] Scores;
     IGamePhase core = new TetrisCore();
 
     private Role[,] RenderCells;
@@ -23,6 +24,7 @@ public class Battle : MonoBehaviour
 
     private void Awake()
     {
+        Scores = new int[2];
         RenderCells = new Role[MapSize.x, MapSize.y];
         inputs = new PlayerInput[2];
         core.Init(Step, MapSize);
@@ -36,9 +38,29 @@ public class Battle : MonoBehaviour
     private void FixedUpdate()
     {
         core.Update(Time.fixedDeltaTime, inputs, ref RenderCells);
-        foreach(var b in Boards)
+
+        Scores[0] = 0;
+        Scores[1] = 0;
+        for (var i = 0; i < MapSize.x; i++)
         {
+            for (var j = 0; j < MapSize.y; j++)
+            {
+                var role = RenderCells[i, j];
+                switch (role)
+                {
+                    case Role.Black:
+                    case Role.White:
+                        Scores[(int)role]++;
+                        break;
+                }
+            }
+        }
+
+        for (var i = 0; i < Boards.Length; i++)
+        {
+            var b = Boards[i];
             b.RefreshTile(RenderCells, Bounds, MapSize);
+            b.RefreshScore(Scores[i]);
         }
         inputs[0] = default;
         inputs[1] = default;
@@ -47,12 +69,17 @@ public class Battle : MonoBehaviour
     private void UpdateInput()
     {
         inputs[0].horizontal = Input.GetAxisRaw("Horizontal");
-        inputs[0].vertical = Input.GetAxisRaw("Vertical");
+        inputs[0].vertical = -Input.GetAxisRaw("Vertical");
         if (Input.GetButtonUp("Rotate"))
         {
             inputs[0].applyRotate = true;
         }
 
-        Debug.Log(inputs[0]);
+        inputs[1].horizontal = Input.GetAxisRaw("Horizontal1");
+        inputs[1].vertical = -Input.GetAxisRaw("Vertical1");
+        if (Input.GetButtonUp("Rotate1"))
+        {
+            inputs[1].applyRotate = true;
+        }
     }
 }

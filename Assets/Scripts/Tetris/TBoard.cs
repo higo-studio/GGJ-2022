@@ -20,6 +20,12 @@ public class TBoard : MonoBehaviour
     public TileCollection tileCollection;
     public bool FlipX;
     public bool FlipY;
+    public TimeLerp timelerp;
+
+    public void RefreshScore(int score)
+    {
+        timelerp.TargetTime = score;
+    }
 
     public void RefreshTile(Role[,] RenderCells, RectInt Bounds, Vector2Int MapSize)
     {
