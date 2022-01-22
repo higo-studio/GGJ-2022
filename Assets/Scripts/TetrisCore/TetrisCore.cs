@@ -254,7 +254,13 @@ public class TetrisCore : IGamePhase
     //填充/吃
     private bool Filling()
     {
-        Debug.Log("Filling!!!!!!!!!!");
+        for(int x = 0; x < size.x; ++x)
+        {
+            for(int y = 0; y < size.y; ++y)
+            {
+                cubes[x, y].is_background = true;
+            }
+        }
         white_player.tetromino_data.color = Role.White;
         black_player.tetromino_data.color = Role.Black;
         for(int i = 0; i < 4; ++i){
@@ -314,7 +320,6 @@ public class TetrisCore : IGamePhase
                 tcubes_white[x, y].is_valid = true;
             }
         }
-        Debug.Log("White Island Count : " + white_islands.ToArray().Length);
         //搜索黑色岛屿
         TraverseCube[,] tcubes_black = new TraverseCube[size.x, traverse_y_size];
         List<Island> black_islands = new List<Island>();
@@ -334,7 +339,31 @@ public class TetrisCore : IGamePhase
                 tcubes_black[x, y].is_valid = true;
             }
         }
-        Debug.Log("Black Island Count : " + black_islands.ToArray().Length);
+        //白块被吃
+        foreach(Island island in white_islands)
+        {
+            if(island.tcubes.Count >= 4){
+                continue;
+            }
+            for(int i = 0; i < island.tcubes.Count; ++i)
+            {
+                Vector2Int pos = island.tcubes[i];
+                cubes[pos.x, pos.y].color = Role.Black;   
+            }
+        }
+        //黑块被吃
+        foreach(Island island in black_islands)
+        {
+            if(island.tcubes.Count >= 4){
+                continue;
+            }
+            for(int i = 0; i < island.tcubes.Count; ++i)
+            {
+                Vector2Int pos = island.tcubes[i];
+                cubes[pos.x, pos.y].color = Role.White;   
+            }
+        }
+        Sinking(ref white_islands, ref black_islands);
         return false;
     }
 
@@ -373,8 +402,25 @@ public class TetrisCore : IGamePhase
     }
 
     //下沉
-    private bool Sinking()
+    private bool Sinking(ref List<Island> white_islands, ref List<Island> black_islands)
     {
+        //白块被吃
+        foreach(Island island in white_islands)
+        {
+            if(island.tcubes.Count < 4){
+                continue;
+            }
+            
+        }
+        //黑块被吃
+        foreach(Island island in black_islands)
+        {
+            if(island.tcubes.Count < 4){
+                continue;
+            }
+            
+        }
+        NewRound();
         return false;
     }
 
