@@ -76,7 +76,7 @@ public class TetrisCore : IGamePhase
     }
 
     //每帧被调用
-    public void Update(float time, PlayerInput[] input, ref int[,] cells)
+    public void Update(float time, PlayerInput[] input, ref Role[,] cells)
     {
         //move & rotate
         if(black_player.IsMoveable() && input[(int)Role.Black].IsValid)
@@ -105,7 +105,7 @@ public class TetrisCore : IGamePhase
         {
             for(int n = 0; n < size.y; ++n)
             {
-                cells[i,n] = (int)cubes[i, n].color;
+                cells[i,n] = cubes[i, n].color;
             }
         }
     }

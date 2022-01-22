@@ -665,6 +665,8 @@ MonoBehaviour:
   MapSize: {x: 10, y: 20}
   Tilemap: {fileID: 564011156}
   Step: 1
+  WhiteTile: {fileID: 11400000, guid: aa44b5216a5f39e4881c5323564afe81, type: 2}
+  BlackTile: {fileID: 11400000, guid: be0a34e2a842ae742b4fa8541a5f9fcf, type: 2}
 --- !u!1 &2144466704
 GameObject:
   m_ObjectHideFlags: 0

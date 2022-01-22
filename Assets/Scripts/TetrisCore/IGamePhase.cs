@@ -16,5 +16,5 @@ public enum Role
 public interface IGamePhase
 {
     public void Init(float step, Vector2Int size);
-    public void Update(float time, PlayerInput[] input, ref int[,] cells);
+    public void Update(float time, PlayerInput[] input, ref Role[,] cells);
 }
