@@ -19,6 +19,25 @@ public struct PlayerHandle
     }
 }
 
+//图搜索用的cube
+public struct TraverseCube
+{
+    public bool is_valid;           //是否已遍历
+    public bool part_of_mainland;   //是否邻接大面积方块
+}
+
+//图搜索用的岛屿
+public struct Island
+{
+    public List<Vector2Int> tcubes;
+    public Role color;
+    public Island(Role _color)
+    {
+        tcubes = new List<Vector2Int>();
+        color = _color;
+    }
+}
+
 // 俄罗斯方块的主要逻辑
 // 程序视角为 上黑下白
 public class TetrisCore : IGamePhase
@@ -233,7 +252,61 @@ public class TetrisCore : IGamePhase
             cubes[positionW.x, positionW.y].color = white_player.tetromino_data.color;
             cubes[positionB.x, positionB.y].color = black_player.tetromino_data.color;
         }
+        //填充
+        int white_complete_line = 0;
+        for(int y = 0; y < 20; ++y)
+        {
+            bool quit = false;
+            for(int x = 0; x < size.x; ++x)
+            {
+                if(cubes[x, y].color != Role.White)
+                    quit = true;
+            }
+            if(quit)
+                break;
+            white_complete_line++;
+        }
+        int black_complete_line = 0;
+        for(int y = 19; y >= 0; --y)
+        {
+            bool quit = false;
+            for(int x = 0; x < size.x; ++x)
+            {
+                if(cubes[x, y].color != Role.Black)
+                    quit = true;
+            }
+            if(quit)
+                break;
+            black_complete_line++;
+        }
+        Debug.Log("Black Line : " + black_complete_line + "     White Line : " + white_complete_line);
+        //界线附近的区域
+        int top = 20 - white_complete_line;
+        int bottom = black_complete_line - 1;
+        int traverse_y_size = top - bottom + 1;
+        //搜索白色岛屿
+        TraverseCube[,] tcubes_white = new TraverseCube[size.x, traverse_y_size];
+        List<Island> white_islands = new List<Island>();
+        for(int y = 0; y < traverse_y_size; ++y)
+        {
+            for(int x = 0; x < size.x; ++x)
+            {
+                if(tcubes_white[x, y].is_valid)           //已遍历则不再遍历
+                    continue;
+                tcubes_white[x, y].is_valid = true;
+                if(cubes[x, bottom + y].color == Role.White)    //搜索到岛屿
+                {
+                    Island island = new Island(Role.White);
+                    TraverseIsland(x, y, top, bottom, in cubes[x, bottom + y].color, ref island);
+                }
+            }
+        }
         return false;
+    }
+
+    private void TraverseIsland(int x, int y, int top, int bottom, in Role color, ref Island island)
+    {
+        
     }
 
     //下沉
