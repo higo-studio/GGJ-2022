@@ -182,13 +182,20 @@ public class TetrisCore : IGamePhase
     private bool Step(ref PlayerHandle player)
     {
         Debug.Log("A Step");
+        Vector2Int pre_pos = player.tetromino_data.position;
+        player.tetromino_data.position.y += player.y_director;
+        if(IsTetrominoGround(ref player))
+        {
+            player.tetromino_data.position.y -= player.y_director;
+            player.tetromino_data.on_ground = true;
+            return true;
+        }
         Role reverse_color = (player.tetromino_data.color == Role.White) ? Role.Black : Role.White;
         for(int i = 0; i < 4; ++i){
-            Vector2Int position = player.tetromino_data.position + player.tetromino_data.cells[i];
+            Vector2Int position = pre_pos + player.tetromino_data.cells[i];
             cubes[position.x, position.y].color = reverse_color;
             cubes[position.x, position.y].is_background = true;
         }
-        player.tetromino_data.position.y += player.y_director;
         for(int i = 0; i < 4; ++i){
             Vector2Int position = player.tetromino_data.position + player.tetromino_data.cells[i];
             cubes[position.x, position.y].color = player.tetromino_data.color;
