@@ -62,7 +62,7 @@ public class TetrisCore : IGamePhase
             curr_time = 0,
             y_director = 1
         };
-        black_player = new PlayerHandle(){
+        white_player = new PlayerHandle(){
             curr_time = 0,
             y_director = -1
         };
@@ -92,12 +92,16 @@ public class TetrisCore : IGamePhase
         if(black_player.IsMoveable() && black_player.curr_time >= step_time)
         {
             black_player.curr_time -= step_time;
-            Step(black_player);
+            Step(ref black_player);
         }
         if(white_player.IsMoveable() && white_player.curr_time >= step_time)
         {
             white_player.curr_time -= step_time;
-            Step(white_player);
+            Step(ref white_player);
+        }
+        if(!black_player.IsMoveable() && !white_player.IsMoveable())
+        {
+            Filling();
         }
         //为渲染提供矩阵
         for(int i = 0; i < size.x; ++i)
@@ -122,7 +126,7 @@ public class TetrisCore : IGamePhase
             player.curr_time = 0;
         }
         player.tetromino_data.position += offset;
-        if(IsHorizontalOutOfIndex(player.tetromino_data.position))
+        if(IsHorizontalOutOfIndex(ref player))
         {
             player.tetromino_data.position.x -= offset.x;
         }
@@ -164,21 +168,42 @@ public class TetrisCore : IGamePhase
         black_player.tetromino_data = black_data;
         white_player.curr_time = 0;
         black_player.curr_time = 0;
+        Vector2Int white_pos = white_player.tetromino_data.position;
+        for(int i = 0; i < 4; ++i){
+            Vector2Int position = white_pos + white_player.tetromino_data.cells[i];
+            cubes[position.x, position.y].color = white_player.tetromino_data.color;
+            cubes[position.x, position.y].is_background = false;
+        }
+        Vector2Int black_position = black_player.tetromino_data.position;
+        for(int i = 0; i < 4; ++i){
+            Vector2Int position = black_position + black_player.tetromino_data.cells[i];
+            cubes[position.x, position.y].color = black_player.tetromino_data.color;
+            cubes[position.x, position.y].is_background = false;
+        }
     }
 
     //每一个“下落”的周期调用，判断是否触底
-    private bool Step(PlayerHandle player)
+    private bool Step(ref PlayerHandle player)
     {
         Debug.Log("A Step");
+        Vector2Int pre_pos = player.tetromino_data.position;
+        player.tetromino_data.position.y += player.y_director;
+        if(IsTetrominoGround(ref player))
+        {
+            player.tetromino_data.position.y -= player.y_director;
+            player.tetromino_data.on_ground = true;
+            return true;
+        }
         Role reverse_color = (player.tetromino_data.color == Role.White) ? Role.Black : Role.White;
         for(int i = 0; i < 4; ++i){
-            Vector2Int position = player.tetromino_data.position + player.tetromino_data.cells[i];
+            Vector2Int position = pre_pos + player.tetromino_data.cells[i];
             cubes[position.x, position.y].color = reverse_color;
+            cubes[position.x, position.y].is_background = true;
         }
-        player.tetromino_data.position.y += player.y_director;
         for(int i = 0; i < 4; ++i){
             Vector2Int position = player.tetromino_data.position + player.tetromino_data.cells[i];
             cubes[position.x, position.y].color = player.tetromino_data.color;
+            cubes[position.x, position.y].is_background = false;
         }
         return false;
     }
@@ -201,7 +226,13 @@ public class TetrisCore : IGamePhase
         for(int i = 0; i < 4; ++i)
         {
             Vector2Int cur_position = player.tetromino_data.cells[i] + player.tetromino_data.position;
-            if(cur_position.y >= size.y || cur_position.y < 0)
+            bool out_of_index = false;
+            switch(player.y_director)
+            {
+                case 1: out_of_index = (cur_position.y >= 20); break;
+                case -1: out_of_index = (cur_position.y < 0); break;
+            }
+            if(out_of_index)
                 return true;
             if((cubes[cur_position.x, cur_position.y].color == player.tetromino_data.color &&
                 cubes[cur_position.x, cur_position.y].is_background) ||
@@ -214,12 +245,26 @@ public class TetrisCore : IGamePhase
         return false;
     }
 
-    private bool IsHorizontalOutOfIndex(in Vector2Int position)
+    private bool IsHorizontalOutOfIndex(ref PlayerHandle player)
     {
-        if(position.x >= size.x || position.x < 0)
+        for(int i = 0; i < 4; ++i)
         {
-            return true;
+            Vector2Int cur_position = player.tetromino_data.cells[i] + player.tetromino_data.position;
+            if(cur_position.x >= size.x || cur_position.x < 0)
+                return true;
+            if((cubes[cur_position.x, cur_position.y].color == player.tetromino_data.color &&
+                cubes[cur_position.x, cur_position.y].is_background) ||
+                (cubes[cur_position.x, cur_position.y].color != player.tetromino_data.color &&
+                !cubes[cur_position.x, cur_position.y].is_background))
+            {
+                return true;
+            }
         }
         return false;
+    }
+
+    private void GameOver()
+    {
+        Debug.Log("玩完了!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     }
 }
