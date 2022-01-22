@@ -363,7 +363,8 @@ public class TetrisCore : IGamePhase
                 cubes[pos.x, pos.y].color = Role.White;   
             }
         }
-        Sinking(ref white_islands, ref black_islands);
+        if(white_islands.Count > 0 || black_islands.Count > 0)
+            Sinking(ref white_islands, ref black_islands);
         return false;
     }
 
@@ -404,24 +405,60 @@ public class TetrisCore : IGamePhase
     //下沉
     private bool Sinking(ref List<Island> white_islands, ref List<Island> black_islands)
     {
-        //白块被吃
+        //白块沉底
         foreach(Island island in white_islands)
         {
             if(island.tcubes.Count < 4){
                 continue;
             }
-            
+            IslandSinking(island, Role.White);
         }
-        //黑块被吃
+        //黑块沉底
         foreach(Island island in black_islands)
         {
             if(island.tcubes.Count < 4){
                 continue;
             }
-            
+            IslandSinking(island, Role.Black);
         }
         NewRound();
         return false;
+    }
+
+    //将一个Island沉底
+    private void IslandSinking(Island island, Role color)
+    {   
+        Debug.Log("Sinking : " + color);
+        bool ground = false;
+        int y_director = (color == Role.White) ? -1 : 1;
+        Role reverse_color = (color == Role.White) ? Role.Black : Role.White;
+        while(!ground)
+        {   
+            for(int i = 0; i < island.tcubes.Count; ++i)
+            {
+                cubes[island.tcubes[i].x, island.tcubes[i].y].color = reverse_color;
+                var pos = island.tcubes[i];
+                pos.y += y_director;
+                island.tcubes[i] = pos;
+                cubes[island.tcubes[i].x, island.tcubes[i].y].color = color;
+            }
+            for(int i = 0; i < island.tcubes.Count; ++i)
+            {
+                switch(color)
+                {
+                    case Role.Black: ground = (island.tcubes[i].y >= 20); break;
+                    case Role.White: ground = (island.tcubes[i].y < 0); break;
+                }
+                if(ground)
+                    break;
+                if(cubes[island.tcubes[i].x, island.tcubes[i].y].color == color)
+                {
+                    ground = true;
+                    break;
+                }
+            }
+        }
+        
     }
 
     //判断触底
