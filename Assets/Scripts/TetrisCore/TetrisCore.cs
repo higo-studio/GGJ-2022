@@ -101,9 +101,9 @@ public class TetrisCore : IGamePhase
             Step(white_player);
         }
         //为渲染提供矩阵
-        for(int i = 0; i < size.y; ++i)
+        for(int i = 0; i < size.x; ++i)
         {
-            for(int n = 0; n < size.x; ++n)
+            for(int n = 0; n < size.y; ++n)
             {
                 cells[i,n] = (int)cubes[i, n].color;
             }
