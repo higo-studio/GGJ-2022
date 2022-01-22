@@ -10,8 +10,10 @@ struct Cube
 
 public struct PlayerHandle
 {
+    public const float CD_DURATION = 0.3f;
     public TetrominoData tetromino_data;
     public float curr_time;
+    public float input_cd_time;
     public int y_director;
     public bool IsMoveable()
     {
@@ -88,7 +90,9 @@ public class TetrisCore : IGamePhase
         }
         //step
         black_player.curr_time += time;
+        black_player.input_cd_time -= time;
         white_player.curr_time += time;
+        white_player.input_cd_time -= time;
         if(black_player.IsMoveable() && black_player.curr_time >= step_time)
         {
             black_player.curr_time -= step_time;
@@ -116,15 +120,20 @@ public class TetrisCore : IGamePhase
     //move rotates
     public void TetrominoMoveRotate(ref PlayerInput input, ref PlayerHandle player)
     {
+        
         Vector2Int pre_pos = player.tetromino_data.position;
         //move
         Vector2Int offset = Vector2Int.zero;
-        if(input.horizontal != 0)
-            offset.x += (input.horizontal > 0) ? 1 : -1;
-        if(input.vertical != 0 && (input.vertical) * player.y_director > 0)
+        if (input.IsValid && player.input_cd_time <= 0)
         {
-            offset.y = player.y_director;
-            player.curr_time = 0;
+            if(input.horizontal != 0)
+                offset.x += (input.horizontal > 0) ? 1 : -1;
+            if(input.vertical != 0 && (input.vertical) * player.y_director > 0)
+            {
+                offset.y = player.y_director;
+                player.curr_time = 0;
+            }
+            player.input_cd_time = PlayerHandle.CD_DURATION;
         }
         player.tetromino_data.position.x += offset.x;
         if(IsHorizontalOutOfIndex(ref player))
