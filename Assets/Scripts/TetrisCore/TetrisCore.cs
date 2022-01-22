@@ -116,6 +116,7 @@ public class TetrisCore : IGamePhase
     //move rotates
     public void TetrominoMoveRotate(ref PlayerInput input, ref PlayerHandle player)
     {
+        Vector2Int pre_pos = player.tetromino_data.position;
         //move
         Vector2Int offset = Vector2Int.zero;
         if(input.horizontal != 0)
@@ -125,14 +126,26 @@ public class TetrisCore : IGamePhase
             offset.y = player.y_director;
             player.curr_time = 0;
         }
-        player.tetromino_data.position += offset;
+        player.tetromino_data.position.x += offset.x;
         if(IsHorizontalOutOfIndex(ref player))
         {
             player.tetromino_data.position.x -= offset.x;
         }
+        player.tetromino_data.position.y += offset.y;
         if(IsTetrominoGround(ref player)){
             player.tetromino_data.on_ground = true;
-            return;
+            player.tetromino_data.position.y -= offset.y;
+        }
+        Role reverse_color = (player.tetromino_data.color == Role.FixiableWhite) ? Role.Black : Role.White;
+        for(int i = 0; i < 4; ++i){
+            Vector2Int position = pre_pos + player.tetromino_data.cells[i];
+            cubes[position.x, position.y].color = reverse_color;
+            cubes[position.x, position.y].is_background = true;
+        }
+        for(int i = 0; i < 4; ++i){
+            Vector2Int position = player.tetromino_data.position + player.tetromino_data.cells[i];
+            cubes[position.x, position.y].color = player.tetromino_data.color;
+            cubes[position.x, position.y].is_background = false;
         }
         //rotate
         
