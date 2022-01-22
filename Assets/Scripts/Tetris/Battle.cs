@@ -53,6 +53,11 @@ public class Battle : MonoBehaviour
             inputs[0].applyRotate = true;
         }
 
-        Debug.Log(inputs[0]);
+        inputs[1].horizontal = Input.GetAxisRaw("Horizontal1");
+        inputs[1].vertical = -Input.GetAxisRaw("Vertical1");
+        if (Input.GetButtonUp("Rotate1"))
+        {
+            inputs[1].applyRotate = true;
+        }
     }
 }
