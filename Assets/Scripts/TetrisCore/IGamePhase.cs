@@ -9,10 +9,10 @@ public struct PlayerInput
 }
 public enum Role
 {
-    Black,
-    White,
-    FexiableBlack,
-    FixiableWhite
+    Black = 0,
+    White = 1,
+    FexiableBlack = 2, 
+    FixiableWhite = 3
 }
 
 public interface IGamePhase

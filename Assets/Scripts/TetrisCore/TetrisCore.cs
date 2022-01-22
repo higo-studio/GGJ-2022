@@ -151,7 +151,7 @@ public class TetrisCore : IGamePhase
         }
         TetrominoData white_data = new TetrominoData(){
             position = new Vector2Int(size.x / 2, size.y - 4),
-            color = Role.White,
+            color = Role.FixiableWhite,
             tetromino = white_t,
             on_ground = false
         };
@@ -160,7 +160,7 @@ public class TetrisCore : IGamePhase
         TetrominoData black_data = new TetrominoData(){
             //position  color  tetromino  onground
             position = new Vector2Int(size.x / 2, 4),
-            color = Role.Black,
+            color = Role.FexiableBlack,
             tetromino = black_t,
             on_ground = false
         };
@@ -194,7 +194,7 @@ public class TetrisCore : IGamePhase
             player.tetromino_data.on_ground = true;
             return true;
         }
-        Role reverse_color = (player.tetromino_data.color == Role.White) ? Role.Black : Role.White;
+        Role reverse_color = (player.tetromino_data.color == Role.FixiableWhite) ? Role.Black : Role.White;
         for(int i = 0; i < 4; ++i){
             Vector2Int position = pre_pos + player.tetromino_data.cells[i];
             cubes[position.x, position.y].color = reverse_color;
@@ -234,9 +234,10 @@ public class TetrisCore : IGamePhase
             }
             if(out_of_index)
                 return true;
-            if((cubes[cur_position.x, cur_position.y].color == player.tetromino_data.color &&
+            if((cubes[cur_position.x, cur_position.y].color == player.tetromino_data.color - 2 &&
                 cubes[cur_position.x, cur_position.y].is_background) ||
                 (cubes[cur_position.x, cur_position.y].color != player.tetromino_data.color &&
+                cubes[cur_position.x, cur_position.y].color != player.tetromino_data.color - 2 &&
                 !cubes[cur_position.x, cur_position.y].is_background))
             {
                 return true;
