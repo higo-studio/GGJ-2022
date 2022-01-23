@@ -60,7 +60,7 @@ public class TetrisCore : IGamePhase
     private List<Island> fill_island;
     private List<Island> sinking_island;
 
-    public const float ENTIER_FILLING_TIME = 2f;
+    public const float ENTIER_FILLING_TIME = 1f;
     private float fillingAcculator = 0f;
 
     public event Action<TetrominoData> OnGrounded;
