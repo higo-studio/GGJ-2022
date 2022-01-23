@@ -101,15 +101,25 @@ public class TetrisCore : IGamePhase
     //每帧被调用
     public void Update(float time, PlayerInput[] input, ref Role[,] cells, ref TetrominoData[] nextTDatas)
     {
+        RevertActiveCells(ref black_player);
+        RevertActiveCells(ref white_player);
+
         //move & rotate
-        if(black_player.IsMoveable() && input[(int)Role.Black].IsValid)
+        if (black_player.IsMoveable() && input[(int)Role.Black].IsValid)
         {
-            TetrominoMoveRotate(ref input[0], ref black_player);
+            Move(input[0].GetMovement(), ref black_player);
+            if (input[0].applyRotate)
+                Rotate(ref black_player);
         }
         if(white_player.IsMoveable() && input[(int)Role.White].IsValid)
         {
-            TetrominoMoveRotate(ref input[1], ref white_player);
+            Move(input[1].GetMovement(), ref white_player);
+            if (input[1].applyRotate)
+                Rotate(ref white_player);
         }
+
+        ApplyActiveCells(ref black_player);
+        ApplyActiveCells(ref white_player);
         //step
         black_player.curr_time += time;
         black_player.input_cd_time -= time;
@@ -129,8 +139,9 @@ public class TetrisCore : IGamePhase
         {
             Filling();
         }
+
         //为渲染提供矩阵
-        for(int i = 0; i < size.x; ++i)
+        for (int i = 0; i < size.x; ++i)
         {
             for(int n = 0; n < size.y; ++n)
             {
@@ -142,18 +153,38 @@ public class TetrisCore : IGamePhase
         nextTDatas[1] = white_player.next_tetromino_data;
     }
 
-    //move rotates
-    public void TetrominoMoveRotate(ref PlayerInput input, ref PlayerHandle player)
+    public void RevertActiveCells(ref PlayerHandle player)
     {
-        
-        Vector2Int pre_pos = player.tetromino_data.position;
+        Role reverse_color = (player.tetromino_data.color == Role.FixiableWhite) ? Role.Black : Role.White;
+        for (int i = 0; i < 4; ++i)
+        {
+            Vector2Int position = player.tetromino_data.position + player.tetromino_data.cells[i];
+            cubes[position.x, position.y].color = reverse_color;
+            cubes[position.x, position.y].is_background = true;
+        }
+    }
+
+    public void ApplyActiveCells(ref PlayerHandle player)
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            Vector2Int position = player.tetromino_data.position + player.tetromino_data.cells[i];
+            cubes[position.x, position.y].color = player.tetromino_data.color;
+            cubes[position.x, position.y].is_background = false;
+        }
+    }
+
+    //move rotates
+    public bool Move(Vector2Int input, ref PlayerHandle player, bool ignoreCd = false)
+    {
+        //Vector2Int pre_pos = player.tetromino_data.position;
         //move
         Vector2Int offset = Vector2Int.zero;
-        if (input.IsValid && player.input_cd_time <= 0)
+        if (ignoreCd || player.input_cd_time <= 0)
         {
-            if(input.horizontal != 0)
-                offset.x += (input.horizontal > 0) ? 1 : -1;
-            if (input.vertical != 0 && (input.vertical) * player.y_director > 0)
+            if(input.x != 0)
+                offset.x += (input.x > 0) ? 1 : -1;
+            if (input.y != 0 && (input.y) * player.y_director > 0)
             {
                 offset.y = player.y_director;
                 player.curr_time = 0;
@@ -161,7 +192,9 @@ public class TetrisCore : IGamePhase
             player.input_cd_time = PlayerHandle.CD_DURATION;
         }
         player.tetromino_data.position.x += offset.x;
-        if(IsHorizontalOutOfIndex(ref player))
+
+        var valid = !IsHorizontalOutOfIndex(ref player);
+        if (!valid)
         {
             player.tetromino_data.position.x -= offset.x;
         }
@@ -170,21 +203,125 @@ public class TetrisCore : IGamePhase
             player.tetromino_data.on_ground = true;
             player.tetromino_data.position.y -= offset.y;
         }
-        Role reverse_color = (player.tetromino_data.color == Role.FixiableWhite) ? Role.Black : Role.White;
-        for(int i = 0; i < 4; ++i){
-            Vector2Int position = pre_pos + player.tetromino_data.cells[i];
-            cubes[position.x, position.y].color = reverse_color;
-            cubes[position.x, position.y].is_background = true;
+        //Role reverse_color = (player.tetromino_data.color == Role.FixiableWhite) ? Role.Black : Role.White;
+        //for (int i = 0; i < 4; ++i)
+        //{
+        //    Vector2Int position = pre_pos + player.tetromino_data.cells[i];
+        //    cubes[position.x, position.y].color = reverse_color;
+        //    cubes[position.x, position.y].is_background = true;
+        //}
+        //for (int i = 0; i < 4; ++i)
+        //{
+        //    Vector2Int position = player.tetromino_data.position + player.tetromino_data.cells[i];
+        //    cubes[position.x, position.y].color = player.tetromino_data.color;
+        //    cubes[position.x, position.y].is_background = false;
+        //}
+
+        return valid;
+    }
+    #region
+    public void Rotate(ref PlayerHandle player)
+    {
+        //Vector2Int pre_pos = player.tetromino_data.position;
+        int originalRotation = player.tetromino_data.rotationIndex;
+
+        var direction = 1;
+        player.tetromino_data.rotationIndex = Wrap(player.tetromino_data.rotationIndex + direction, 0, 4);
+        ApplyRotationMatrix(direction, ref player);
+
+        if (!TestWallKicks(player.tetromino_data.rotationIndex, direction, ref player))
+        {
+            player.tetromino_data.rotationIndex = originalRotation;
+            ApplyRotationMatrix(-direction, ref player);
         }
-        for(int i = 0; i < 4; ++i){
-            Vector2Int position = player.tetromino_data.position + player.tetromino_data.cells[i];
-            cubes[position.x, position.y].color = player.tetromino_data.color;
-            cubes[position.x, position.y].is_background = false;
-        }
-        //rotate
-        
+        //Role reverse_color = (player.tetromino_data.color == Role.FixiableWhite) ? Role.Black : Role.White;
+        //for (int i = 0; i < 4; ++i)
+        //{
+        //    Vector2Int position = pre_pos + player.tetromino_data.cells[i];
+        //    cubes[position.x, position.y].color = reverse_color;
+        //    cubes[position.x, position.y].is_background = true;
+        //}
+        //for (int i = 0; i < 4; ++i)
+        //{
+        //    Vector2Int position = player.tetromino_data.position + player.tetromino_data.cells[i];
+        //    cubes[position.x, position.y].color = player.tetromino_data.color;
+        //    cubes[position.x, position.y].is_background = false;
+        //}
     }
 
+    private void ApplyRotationMatrix(int direction, ref PlayerHandle player)
+    {
+        float[] matrix = Data.RotationMatrix;
+        var cells = player.tetromino_data.cells;
+        // Rotate all of the cells using the rotation matrix
+        for (int i = 0; i < cells.Length; i++)
+        {
+            var cellInt2 = cells[i];
+            var cell = new Vector3(cellInt2.x, cellInt2.y, 0);
+            int x, y;
+
+            switch (player.tetromino_data.tetromino)
+            {
+                case Tetromino.I:
+                case Tetromino.O:
+                    // "I" and "O" are rotated from an offset center point
+                    cell.x -= 0.5f;
+                    cell.y -= 0.5f;
+                    x = Mathf.CeilToInt((cell.x * matrix[0] * direction) + (cell.y * matrix[1] * direction));
+                    y = Mathf.CeilToInt((cell.x * matrix[2] * direction) + (cell.y * matrix[3] * direction));
+                    break;
+
+                default:
+                    x = Mathf.RoundToInt((cell.x * matrix[0] * direction) + (cell.y * matrix[1] * direction));
+                    y = Mathf.RoundToInt((cell.x * matrix[2] * direction) + (cell.y * matrix[3] * direction));
+                    break;
+            }
+
+            cells[i] = new Vector2Int(x, y);
+        }
+    }
+
+    private bool TestWallKicks(int rotationIndex, int rotationDirection, ref PlayerHandle player)
+    {
+        int wallKickIndex = GetWallKickIndex(rotationIndex, rotationDirection, ref player);
+
+        for (int i = 0; i < player.tetromino_data.wallKicks.GetLength(1); i++)
+        {
+            Vector2Int translation = player.tetromino_data.wallKicks[wallKickIndex, i];
+
+            if (Move(translation, ref player, true))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private int GetWallKickIndex(int rotationIndex, int rotationDirection, ref PlayerHandle player)
+    {
+        int wallKickIndex = rotationIndex * 2;
+
+        if (rotationDirection < 0)
+        {
+            wallKickIndex--;
+        }
+
+        return Wrap(wallKickIndex, 0, player.tetromino_data.wallKicks.GetLength(0));
+    }
+
+    private int Wrap(int input, int min, int max)
+    {
+        if (input < min)
+        {
+            return max - (min - input) % (max - min);
+        }
+        else
+        {
+            return min + (input - min) % (max - min);
+        }
+    }
+    #endregion
     void GenTData(out TetrominoData wd, out TetrominoData bd)
     {
         Tetromino white_t = (Tetromino)Random.Range(0, 7);
