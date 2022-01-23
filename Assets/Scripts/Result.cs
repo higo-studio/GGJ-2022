@@ -14,6 +14,23 @@ public class Result : MonoBehaviour
     public Transform P1Result;
     public Transform P2Result;
     // Start is called before the first frame update
+    public void SetWin(Role role)
+    {
+        var p1 = P1Result.localPosition;
+        var p2 = P2Result.localPosition;
+        if (role == Role.Black)
+        {
+            p1.x = -500;
+            p2.x = 500;
+        }
+        else
+        {
+            p1.x = 500;
+            p2.x = -500;
+        }
+        P1Result.localPosition = p1;
+        P2Result.localPosition = p2;
+    }
     void Start()
     {
         //这里改变玩家结果的图片

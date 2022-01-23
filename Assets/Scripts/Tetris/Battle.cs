@@ -17,6 +17,7 @@ public class Battle : MonoBehaviour
 
     public AudioSource GroundAudio;
     public AudioSource FillAudio;
+    public Result result;
 
     TetrisCore core = new TetrisCore();
 
@@ -58,6 +59,7 @@ public class Battle : MonoBehaviour
             GroundAudio.Play();
         };
         isRunning = true;
+        result.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -71,7 +73,18 @@ public class Battle : MonoBehaviour
         if (core.IsGameOver)
         {
             isRunning = false;
-            Restart();
+            var bscore = Scores[0];
+            var wscore = Scores[1];
+
+            if (bscore > wscore)
+            {
+                result.SetWin(Role.Black);
+            }
+            else
+            {
+                result.SetWin(Role.White);
+            }
+            result.gameObject.SetActive(true);
         }
         if (!isRunning) return;
         core.Update(Time.fixedDeltaTime, inputs, ref RenderCells, ref NextTDatas);
