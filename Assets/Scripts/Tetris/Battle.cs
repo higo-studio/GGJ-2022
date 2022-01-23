@@ -14,6 +14,7 @@ public class Battle : MonoBehaviour
     private Role[,] RenderCells;
     private TetrominoData[] NextTDatas;
     private PlayerInput[] inputs;
+    private bool isRunning = true;
 
     public RectInt Bounds
     {
@@ -26,6 +27,11 @@ public class Battle : MonoBehaviour
 
     private void Awake()
     {
+        Init();
+    }
+
+    private void Init()
+    {
         Scores = new int[2];
         NextTDatas = new TetrominoData[2];
         RenderCells = new Role[MapSize.x, MapSize.y];
@@ -35,11 +41,13 @@ public class Battle : MonoBehaviour
 
     private void Update()
     {
+        if (!isRunning) return;
         UpdateInput();
     }
 
     private void FixedUpdate()
     {
+        if (!isRunning) return;
         core.Update(Time.fixedDeltaTime, inputs, ref RenderCells, ref NextTDatas);
 
         Scores[0] = 0;
@@ -74,14 +82,14 @@ public class Battle : MonoBehaviour
     private void UpdateInput()
     {
         inputs[1].horizontal = Input.GetAxisRaw("Horizontal");
-        inputs[1].vertical = -Input.GetAxisRaw("Vertical");
+        inputs[1].vertical = Input.GetAxisRaw("Vertical");
         if (Input.GetButtonUp("Rotate"))
         {
             inputs[1].applyRotate = true;
         }
 
-        inputs[0].horizontal = Input.GetAxisRaw("Horizontal1");
-        inputs[0].vertical = -Input.GetAxisRaw("Vertical1");
+        inputs[0].horizontal = -Input.GetAxisRaw("Horizontal1");
+        inputs[0].vertical = Input.GetAxisRaw("Vertical1");
         if (Input.GetButtonUp("Rotate1"))
         {
             inputs[0].applyRotate = true;
@@ -117,5 +125,21 @@ public class Battle : MonoBehaviour
             var pos = new Vector3Int(cell.x - 1, cell.y - 1, 0);
             n1.SetTile(pos, b1.tileCollection.tiles[(int)Role.FixiableWhite]);
         }
+    }
+
+    public void Stop()
+    {
+        isRunning = false;
+    }
+
+    public void Resume()
+    {
+        isRunning = true;
+    }
+
+    public void Restart()
+    {
+        core = new TetrisCore();
+        Init();
     }
 }
