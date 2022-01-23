@@ -50,7 +50,6 @@ public class Battle : MonoBehaviour
     {
         if (!isRunning) return;
         core.Update(Time.fixedDeltaTime, inputs, ref RenderCells, ref NextTDatas);
-
         Scores[0] = 0;
         Scores[1] = 0;
         for (var i = 0; i < MapSize.x; i++)
@@ -77,7 +76,13 @@ public class Battle : MonoBehaviour
 
         RefreshNextView();
         inputs[0] = default;
-        inputs[1] = default;
+        inputs[1] = default;  
+        
+        if (core.IsGameOver)
+        {
+            isRunning = false;
+            Restart();
+        }
     }
 
     private void UpdateInput()

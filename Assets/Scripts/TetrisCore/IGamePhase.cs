@@ -26,4 +26,5 @@ public interface IGamePhase
 {
     public void Init(float step, Vector2Int size, int _max_island);
     public void Update(float time, PlayerInput[] input, ref Role[,] cells, ref TetrominoData[] nextTDatas);
+    public bool IsGameOver { get; }
 }
