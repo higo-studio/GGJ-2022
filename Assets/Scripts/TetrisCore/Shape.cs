@@ -72,7 +72,6 @@ public enum Tetromino
 public struct TetrominoData
 {
     public Tetromino tetromino;
-    public Vector2Int[] originCells { get; private set; }
     public Vector2Int[] cells;
     public Vector2Int[,] wallKicks { get; private set; }
     public Vector2Int position;
@@ -83,8 +82,9 @@ public struct TetrominoData
 
     public void Initialize()
     {
-        this.originCells = Data.Cells[this.tetromino];
-        this.cells = Data.Cells[this.tetromino];
+        var originCells = Data.Cells[this.tetromino];
+        this.cells = new Vector2Int[originCells.Length];
+        originCells.CopyTo(this.cells, 0);
         this.wallKicks = Data.WallKicks[this.tetromino];
     }
 
