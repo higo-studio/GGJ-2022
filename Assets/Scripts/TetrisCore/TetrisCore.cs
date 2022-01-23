@@ -198,10 +198,13 @@ public class TetrisCore : IGamePhase
         {
             player.tetromino_data.position.x -= offset.x;
         }
-        player.tetromino_data.position.y += offset.y;
-        if(IsTetrominoGround(ref player)){
-            player.tetromino_data.on_ground = true;
-            player.tetromino_data.position.y -= offset.y;
+        else
+        {
+            player.tetromino_data.position.y += offset.y;
+            if(IsTetrominoGround(ref player)){
+                player.tetromino_data.on_ground = true;
+                player.tetromino_data.position.y -= offset.y;
+            }
         }
         //Role reverse_color = (player.tetromino_data.color == Role.FixiableWhite) ? Role.Black : Role.White;
         //for (int i = 0; i < 4; ++i)
