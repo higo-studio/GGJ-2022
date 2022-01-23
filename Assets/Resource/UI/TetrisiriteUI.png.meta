@@ -11,6 +11,9 @@ TextureImporter:
   - first:
       213: -2952928070488502955
     second: TetrisiriteUI_2
+  - first:
+      213: -6480934780082059286
+    second: TetrisiriteUI_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -158,6 +161,27 @@ TextureImporter:
       bones: []
       spriteID: 55dc04fa0971507d0800000000000000
       internalID: -2952928070488502955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TetrisiriteUI_3
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae70cbca7281f06a0800000000000000
+      internalID: -6480934780082059286
       vertices: []
       indices: 
       edges: []
