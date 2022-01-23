@@ -376,10 +376,11 @@ public class TetrisCore : IGamePhase
     bool IsTDataValid(TetrominoData td, ref PlayerHandle player)
     {
         var cells = td.cells;
-        for(var i = 0; i < cells.Length; i++)
+        var targetRole = player.tetromino_data.color == Role.FixiableWhite ? Role.White : Role.Black;
+        for (var i = 0; i < cells.Length; i++)
         {
             var pos = cells[i] + td.position;
-            if (cubes[pos.x, pos.y].color == player.tetromino_data.color)
+            if (cubes[pos.x, pos.y].color == targetRole)
             {
                 return false;
             }
