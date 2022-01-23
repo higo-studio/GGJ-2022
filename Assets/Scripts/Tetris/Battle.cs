@@ -90,8 +90,7 @@ public class Battle : MonoBehaviour
         }
 
         var factor = Mathf.Clamp01(core.RoundCount / SpeedUpTotalRound);
-        Step = MinStep + (MaxStep - MinStep) * Curve.Evaluate(factor);
-        Step = MaxStep - Step;
+        Step = MinStep + (MaxStep - MinStep) * Curve.Evaluate(1 - factor);
         core.SetStepTime(Step);
     }
 

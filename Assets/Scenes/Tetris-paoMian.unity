@@ -406,7 +406,7 @@ MonoBehaviour:
   Step: 0.1
   MaxStep: 2
   MinStep: 0.1
-  SpeedUpTime: 60
+  SpeedUpTotalRound: 10
   Max_Island: 6
   Boards:
   - {fileID: 2126037730}
