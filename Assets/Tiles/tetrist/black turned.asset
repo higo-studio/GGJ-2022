@@ -12,9 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
   m_Name: black turned
   m_EditorClassIdentifier: 
-  m_AnimatedSprites: []
+  m_AnimatedSprites:
+  - {fileID: -2512022324153985834, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 4722568692281262535, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 4604226040272203903, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -7005867657833143457, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -4671176462666374981, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -6752784302022112224, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 2540865422337361120, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -5612571513144464730, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 5188630319029885128, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 3840021553168933106, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
   m_MinSpeed: 1
   m_MaxSpeed: 1
   m_AnimationStartTime: 0
   m_AnimationStartFrame: 0
-  m_TileColliderType: 0
+  m_TileColliderType: 1

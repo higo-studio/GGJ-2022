@@ -12,9 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
   m_Name: whrite turned
   m_EditorClassIdentifier: 
-  m_AnimatedSprites: []
-  m_MinSpeed: 1
-  m_MaxSpeed: 1
+  m_AnimatedSprites:
+  - {fileID: -3628916850851679269, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -9208455177081058445, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -1662767826918659799, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 7629643003943235645, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 1060886775442578494, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -77348686895536167, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 7399311489053629272, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 3682635595826082884, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -2815051153275508065, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -4315189113424629397, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  m_MinSpeed: 2
+  m_MaxSpeed: 2
   m_AnimationStartTime: 0
   m_AnimationStartFrame: 0
-  m_TileColliderType: 0
+  m_TileColliderType: 1

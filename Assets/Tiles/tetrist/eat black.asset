@@ -12,9 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
   m_Name: eat black
   m_EditorClassIdentifier: 
-  m_AnimatedSprites: []
+  m_AnimatedSprites:
+  - {fileID: 3840021553168933106, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 365755687086105905, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 8432378891185216411, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 8719151166351000062, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -4235709083858775086, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 8503964815573486208, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 3277532921417633650, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -4315189113424629397, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
   m_MinSpeed: 1
   m_MaxSpeed: 1
   m_AnimationStartTime: 0
   m_AnimationStartFrame: 0
-  m_TileColliderType: 0
+  m_TileColliderType: 1

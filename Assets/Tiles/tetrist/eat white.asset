@@ -12,9 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
   m_Name: eat white
   m_EditorClassIdentifier: 
-  m_AnimatedSprites: []
+  m_AnimatedSprites:
+  - {fileID: -4315189113424629397, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -264341713996537480, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 7584529394568617095, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -8330337461399582677, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 5628337887764326704, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -5360961467800113024, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: -2695177972031121277, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
+  - {fileID: 3840021553168933106, guid: cac0cb11b8b4a034687b3b654b0e4da6, type: 3}
   m_MinSpeed: 1
   m_MaxSpeed: 1
   m_AnimationStartTime: 0
   m_AnimationStartFrame: 0
-  m_TileColliderType: 0
+  m_TileColliderType: 1
