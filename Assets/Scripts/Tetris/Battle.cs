@@ -4,13 +4,18 @@ using UnityEngine.Tilemaps;
 public class Battle : MonoBehaviour
 {
     public Vector2Int MapSize;
-    [Range(0.5f, 2f)]
+    [Range(0.1f, 2f)]
     public float Step = 1f;
+    public float MaxStep = 2f;
+    public float MinStep = 0.1f;
+    public float SpeedUpTotalRound = 10;
     public int Max_Island = 6;
     public TBoard[] Boards;
     public int[] Scores;
     public Tilemap[] NextTilemaps;
-    IGamePhase core = new TetrisCore();
+    public AnimationCurve Curve;
+
+    TetrisCore core = new TetrisCore();
 
     private Role[,] RenderCells;
     private TetrominoData[] NextTDatas;
@@ -83,6 +88,11 @@ public class Battle : MonoBehaviour
             isRunning = false;
             Restart();
         }
+
+        var factor = Mathf.Clamp01(core.RoundCount / SpeedUpTotalRound);
+        Step = MinStep + (MaxStep - MinStep) * Curve.Evaluate(factor);
+        Step = MaxStep - Step;
+        core.SetStepTime(Step);
     }
 
     private void UpdateInput()

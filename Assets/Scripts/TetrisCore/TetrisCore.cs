@@ -63,6 +63,8 @@ public class TetrisCore : IGamePhase
     {
         get => isGameOver;
     }
+    public int RoundCount { get; private set; } = -1;
+
 
     //初始化 平分地图
     public void Init(float step, Vector2Int size, int max_island)
@@ -425,6 +427,7 @@ public class TetrisCore : IGamePhase
             cubes[position.x, position.y].color = black_player.tetromino_data.color;
             cubes[position.x, position.y].is_background = false;
         }
+        RoundCount++;
     }
 
     //每一个“下落”的周期调用，判断是否触底

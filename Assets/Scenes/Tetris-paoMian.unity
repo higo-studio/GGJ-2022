@@ -403,7 +403,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MapSize: {x: 10, y: 30}
-  Step: 1
+  Step: 0.1
+  MaxStep: 2
+  MinStep: 0.1
+  SpeedUpTime: 60
   Max_Island: 6
   Boards:
   - {fileID: 2126037730}
@@ -412,6 +415,30 @@ MonoBehaviour:
   NextTilemaps:
   - {fileID: 1069707043}
   - {fileID: 1073244448}
+  Curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
