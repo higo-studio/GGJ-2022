@@ -540,9 +540,10 @@ public class TetrisCore : IGamePhase
             Vector2Int cur_position = player.tetromino_data.cells[i] + player.tetromino_data.position;
             if(cur_position.x >= size.x || cur_position.x < 0)
                 return true;
-            if((cubes[cur_position.x, cur_position.y].color == player.tetromino_data.color &&
+            if((cubes[cur_position.x, cur_position.y].color == player.tetromino_data.color - 2 &&
                 cubes[cur_position.x, cur_position.y].is_background) ||
                 (cubes[cur_position.x, cur_position.y].color != player.tetromino_data.color &&
+                cubes[cur_position.x, cur_position.y].color != player.tetromino_data.color - 2 &&
                 !cubes[cur_position.x, cur_position.y].is_background))
             {
                 return true;
