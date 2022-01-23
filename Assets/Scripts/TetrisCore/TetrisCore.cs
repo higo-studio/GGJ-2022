@@ -236,6 +236,7 @@ public class TetrisCore : IGamePhase
             if(IsTetrominoGround(ref player)){
                 player.tetromino_data.on_ground = true;
                 player.tetromino_data.position.y -= offset.y;
+                OnGrounded(player.tetromino_data);
             }
         }
         //Role reverse_color = (player.tetromino_data.color == Role.FixiableWhite) ? Role.Black : Role.White;
