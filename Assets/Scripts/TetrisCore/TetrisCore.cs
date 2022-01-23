@@ -2,14 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum GameState
-{
-    NORMALFALL,
-    FILLING,
-    SINKING,
-    NONE
-}
-
 struct Cube
 {
     public Role color;
@@ -61,7 +53,6 @@ public class TetrisCore : IGamePhase
     private Cube[,] cubes;
     PlayerHandle black_player;
     PlayerHandle white_player;
-    public GameState gamestate = GameState.NONE;
 
     //初始化 平分地图
     public void Init(float step, Vector2Int size)
@@ -107,7 +98,6 @@ public class TetrisCore : IGamePhase
         step_time = time;
     }
 
-    public float state_time = 0;
     //每帧被调用
     public void Update(float time, PlayerInput[] input, ref Role[,] cells, ref TetrominoData[] nextTDatas)
     {
@@ -115,13 +105,13 @@ public class TetrisCore : IGamePhase
         RevertActiveCells(ref white_player);
 
         //move & rotate
-        if (black_player.IsMoveable() && input[(int)Role.Black].IsValid && gamestate == GameState.NORMALFALL)
+        if (black_player.IsMoveable() && input[(int)Role.Black].IsValid)
         {
             Move(input[0].GetMovement(), ref black_player);
             if (input[0].applyRotate)
                 Rotate(ref black_player);
         }
-        if(white_player.IsMoveable() && input[(int)Role.White].IsValid && gamestate == GameState.NORMALFALL)
+        if(white_player.IsMoveable() && input[(int)Role.White].IsValid)
         {
             Move(input[1].GetMovement(), ref white_player);
             if (input[1].applyRotate)
@@ -135,31 +125,19 @@ public class TetrisCore : IGamePhase
         black_player.input_cd_time -= time;
         white_player.curr_time += time;
         white_player.input_cd_time -= time;
-        if(black_player.IsMoveable() && black_player.curr_time >= step_time && gamestate == GameState.NORMALFALL)
+        if(black_player.IsMoveable() && black_player.curr_time >= step_time)
         {
             black_player.curr_time -= step_time;
             Step(ref black_player);
         }
-        if(white_player.IsMoveable() && white_player.curr_time >= step_time && gamestate == GameState.NORMALFALL)
+        if(white_player.IsMoveable() && white_player.curr_time >= step_time)
         {
             white_player.curr_time -= step_time;
             Step(ref white_player);
         }
-        if(gamestate == GameState.NORMALFALL && !black_player.IsMoveable() && !white_player.IsMoveable())
+        if(!black_player.IsMoveable() && !white_player.IsMoveable())
         {
-            gamestate = GameState.FILLING;
-            state_time = 0;
-            Filling(time);
-        }
-        if(gamestate == GameState.FILLING)
-        {
-            state_time += time;
-            if(state_time >= step_time)
-            {
-                gamestate = GameState.SINKING;
-                state_time -= step_time;
-                Sinking();
-            }
+            Filling();
         }
 
         //为渲染提供矩阵
@@ -220,10 +198,13 @@ public class TetrisCore : IGamePhase
         {
             player.tetromino_data.position.x -= offset.x;
         }
-        player.tetromino_data.position.y += offset.y;
-        if(IsTetrominoGround(ref player)){
-            player.tetromino_data.on_ground = true;
-            player.tetromino_data.position.y -= offset.y;
+        else
+        {
+            player.tetromino_data.position.y += offset.y;
+            if(IsTetrominoGround(ref player)){
+                player.tetromino_data.on_ground = true;
+                player.tetromino_data.position.y -= offset.y;
+            }
         }
         //Role reverse_color = (player.tetromino_data.color == Role.FixiableWhite) ? Role.Black : Role.White;
         //for (int i = 0; i < 4; ++i)
@@ -408,7 +389,6 @@ public class TetrisCore : IGamePhase
             cubes[position.x, position.y].color = black_player.tetromino_data.color;
             cubes[position.x, position.y].is_background = false;
         }
-        gamestate = GameState.NORMALFALL;
     }
 
     //每一个“下落”的周期调用，判断是否触底
@@ -437,10 +417,8 @@ public class TetrisCore : IGamePhase
         return false;
     }
 
-    List<Island> sinking_white_island;
-    List<Island> sinking_black_island;
     //填充/吃
-    private bool Filling(float time)
+    private bool Filling()
     {
         for(int x = 0; x < size.x; ++x)
         {
@@ -457,7 +435,6 @@ public class TetrisCore : IGamePhase
             cubes[positionW.x, positionW.y].color = white_player.tetromino_data.color;
             cubes[positionB.x, positionB.y].color = black_player.tetromino_data.color;
         }
-
         //填充
         int white_complete_line = 0;
         for(int y = 0; y < size.y; ++y)
@@ -515,11 +492,19 @@ public class TetrisCore : IGamePhase
             }
         }
         //吃完后再次搜索有无需要沉底的岛屿
-        sinking_white_island = new List<Island>();
+        List<Island> sinking_white_island = new List<Island>();
         Traverse(bottom, traverse_y_size, Role.White, ref sinking_white_island, true);
-        sinking_black_island = new List<Island>();
+        List<Island> sinking_black_island = new List<Island>();
         Traverse(bottom, traverse_y_size, Role.Black, ref sinking_black_island, true);
 
+        if (sinking_white_island.Count > 0 || sinking_black_island.Count > 0)
+        {
+            Sinking(ref sinking_white_island, ref sinking_black_island);
+        }
+        else
+        {
+            NewRound();
+        }
         return false;
     }
 
@@ -585,16 +570,16 @@ public class TetrisCore : IGamePhase
     }
 
     //下沉
-    private bool Sinking()
+    private bool Sinking(ref List<Island> white_islands, ref List<Island> black_islands)
     {
         Debug.Log("Sinking !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
         //白块沉底
-        foreach(Island island in sinking_white_island)
+        foreach(Island island in white_islands)
         {
             IslandSinking(island, Role.White);
         }
         //黑块沉底
-        foreach(Island island in sinking_black_island)
+        foreach(Island island in black_islands)
         {
             IslandSinking(island, Role.Black);
         }
