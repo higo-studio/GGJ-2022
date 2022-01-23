@@ -175,7 +175,7 @@ public class TetrisCore : IGamePhase
     }
 
     //move rotates
-    public bool Move(Vector2Int input, ref PlayerHandle player, bool ignoreCd = false)
+    public bool Move(Vector2Int input, ref PlayerHandle player, bool ignoreCd = false, bool clearTime = true)
     {
         //Vector2Int pre_pos = player.tetromino_data.position;
         //move
@@ -187,7 +187,8 @@ public class TetrisCore : IGamePhase
             if (input.y != 0 && (input.y) * player.y_director > 0)
             {
                 offset.y = player.y_director;
-                player.curr_time = 0;
+                if (clearTime)
+                    player.curr_time = 0;
             }
             player.input_cd_time = PlayerHandle.CD_DURATION;
         }
@@ -292,7 +293,7 @@ public class TetrisCore : IGamePhase
         {
             Vector2Int translation = player.tetromino_data.wallKicks[wallKickIndex, i];
 
-            if (Move(translation, ref player, true))
+            if (Move(translation, ref player, true, false))
             {
                 return true;
             }
