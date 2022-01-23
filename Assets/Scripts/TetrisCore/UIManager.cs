@@ -19,5 +19,9 @@ public class UIManager : MonoBehaviour
 #endif
     }
 
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("TetrisStart");
+    }
 
 }
