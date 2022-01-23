@@ -601,10 +601,14 @@ public class TetrisCore : IGamePhase
             {
                 if(y >= y_size - 1)
                     island.part_of_mainland = true;
+                if(y + bottom + 1 >= size.y)
+                    island.part_of_mainland = true;
             }
             else
             {
                 if(y <= 0)
+                    island.part_of_mainland = true;
+                if(y + bottom - 1 <= 0)
                     island.part_of_mainland = true;
             }
             //深度遍历
