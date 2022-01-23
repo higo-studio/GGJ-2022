@@ -29,4 +29,5 @@ public interface IGamePhase
     public void Update(float time, PlayerInput[] input, ref Role[,] cells, ref TetrominoData[] nextTDatas);
     public ref List<Island> GetTillIslands();
     public ref List<Island> GetSinkingIslands();
+    public bool IsGameOver { get; }
 }

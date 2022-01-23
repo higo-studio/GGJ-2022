@@ -58,6 +58,12 @@ public class TetrisCore : IGamePhase
     private List<Island> fill_island;
     private List<Island> sinking_island;
 
+    private bool isGameOver;
+    public bool IsGameOver
+    {
+        get => isGameOver;
+    }
+
     //初始化 平分地图
     public void Init(float step, Vector2Int size, int max_island)
     {
@@ -106,6 +112,7 @@ public class TetrisCore : IGamePhase
     //每帧被调用
     public void Update(float time, PlayerInput[] input, ref Role[,] cells, ref TetrominoData[] nextTDatas)
     {
+        if (isGameOver) return;
         RevertActiveCells(ref black_player);
         RevertActiveCells(ref white_player);
         
@@ -364,6 +371,20 @@ public class TetrisCore : IGamePhase
         bd.Initialize();
     }
 
+    bool IsTDataValid(TetrominoData td, ref PlayerHandle player)
+    {
+        var cells = td.cells;
+        for(var i = 0; i < cells.Length; i++)
+        {
+            var pos = cells[i] + td.position;
+            if (cubes[pos.x, pos.y].color == player.tetromino_data.color)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     //新的一轮
     private void NewRound()
     {
@@ -377,6 +398,12 @@ public class TetrisCore : IGamePhase
 
         white_player.tetromino_data = white_player.next_tetromino_data;
         black_player.tetromino_data = black_player.next_tetromino_data;
+        if (!IsTDataValid(white_player.tetromino_data, ref white_player) || !IsTDataValid(black_player.tetromino_data, ref black_player))
+        {
+            GameOver();
+            return;
+        }
+        
 
         white_player.curr_time = 0;
         black_player.curr_time = 0;
@@ -737,6 +764,7 @@ public class TetrisCore : IGamePhase
     private void GameOver()
     {
         Debug.Log("玩完了!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        isGameOver = true;
     }
 
     public ref List<Island> GetTillIslands()
