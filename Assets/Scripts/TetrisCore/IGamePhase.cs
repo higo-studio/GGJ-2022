@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public struct PlayerInput
 {
@@ -26,4 +27,6 @@ public interface IGamePhase
 {
     public void Init(float step, Vector2Int size, int _max_island);
     public void Update(float time, PlayerInput[] input, ref Role[,] cells, ref TetrominoData[] nextTDatas);
+    public ref List<Island> GetTillIslands();
+    public ref List<Island> GetSinkingIslands();
 }
