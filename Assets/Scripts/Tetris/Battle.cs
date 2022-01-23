@@ -15,6 +15,9 @@ public class Battle : MonoBehaviour
     public Tilemap[] NextTilemaps;
     public AnimationCurve Curve;
 
+    public AudioSource GroundAudio;
+    public AudioSource FillAudio;
+
     TetrisCore core = new TetrisCore();
 
     private Role[,] RenderCells;
@@ -43,6 +46,17 @@ public class Battle : MonoBehaviour
         RenderCells = new Role[MapSize.x, MapSize.y];
         inputs = new PlayerInput[2];
         core.Init(Step, MapSize, Max_Island);
+        core.OnFilled += () =>
+        {
+            Debug.Log("OnFilled");
+            FillAudio.Play();
+        };
+
+        core.OnGrounded += (d) =>
+        {
+            Debug.Log("OnGrounded");
+            GroundAudio.Play();
+        };
         isRunning = true;
     }
 

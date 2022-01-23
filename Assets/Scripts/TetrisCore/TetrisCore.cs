@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using Random = UnityEngine.Random;
 
 struct Cube
 {
@@ -57,6 +59,9 @@ public class TetrisCore : IGamePhase
     PlayerHandle white_player;
     private List<Island> fill_island;
     private List<Island> sinking_island;
+
+    public event Action<TetrominoData> OnGrounded;
+    public event Action OnFilled;
 
     private bool isGameOver;
     public bool IsGameOver
@@ -441,6 +446,7 @@ public class TetrisCore : IGamePhase
         {
             player.tetromino_data.position.y -= player.y_director;
             player.tetromino_data.on_ground = true;
+            OnGrounded(player.tetromino_data);
             return true;
         }
         Role reverse_color = (player.tetromino_data.color == Role.FixiableWhite) ? Role.Black : Role.White;
@@ -533,6 +539,10 @@ public class TetrisCore : IGamePhase
                 cubes[pos.x, pos.y].color = Role.White;   
             }
             fill_island.Add(island);
+        }
+        if (fill_island.Count > 0)
+        {
+            OnFilled();
         }
         //吃完后再次搜索有无需要沉底的岛屿
         List<Island> sinking_white_island = new List<Island>();
