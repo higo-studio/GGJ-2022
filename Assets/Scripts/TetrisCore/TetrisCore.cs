@@ -296,7 +296,7 @@ public class TetrisCore : IGamePhase
         }
         //填充
         int white_complete_line = 0;
-        for(int y = 0; y < 20; ++y)
+        for(int y = 0; y < size.y; ++y)
         {
             bool quit = false;
             for(int x = 0; x < size.x; ++x)
@@ -309,7 +309,7 @@ public class TetrisCore : IGamePhase
             white_complete_line++;
         }
         int black_complete_line = 0;
-        for(int y = 19; y >= 0; --y)
+        for(int y = size.y - 1; y >= 0; --y)
         {
             bool quit = false;
             for(int x = 0; x < size.x; ++x)
@@ -323,7 +323,7 @@ public class TetrisCore : IGamePhase
         }
 
         //界线附近的区域
-        int top = 20 - black_complete_line;
+        int top = size.y - black_complete_line;
         int bottom = white_complete_line - 1;
         int traverse_y_size = top - bottom + 1;
         //搜索白色岛屿
@@ -493,7 +493,7 @@ public class TetrisCore : IGamePhase
             bool out_of_index = false;
             switch(color)
                 {
-                    case Role.Black: out_of_index = (island.tcubes[i].y >= 20); break;
+                    case Role.Black: out_of_index = (island.tcubes[i].y >= size.y); break;
                     case Role.White: out_of_index = (island.tcubes[i].y < 0); break;
                 }
             if(out_of_index)
@@ -516,7 +516,7 @@ public class TetrisCore : IGamePhase
             bool out_of_index = false;
             switch(player.y_director)
             {
-                case 1: out_of_index = (cur_position.y >= 20); break;
+                case 1: out_of_index = (cur_position.y >= size.y); break;
                 case -1: out_of_index = (cur_position.y < 0); break;
             }
             if(out_of_index)
