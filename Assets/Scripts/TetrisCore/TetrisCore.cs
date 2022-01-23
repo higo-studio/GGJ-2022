@@ -60,10 +60,14 @@ public class TetrisCore : IGamePhase
     private List<Island> fill_island;
     private List<Island> sinking_island;
 
+    public const float ENTIER_FILLING_TIME = 2f;
+    private float fillingAcculator = 0f;
+
     public event Action<TetrominoData> OnGrounded;
     public event Action OnFilled;
 
     private bool isGameOver;
+    public float NextFilling;
     public bool IsGameOver
     {
         get => isGameOver;
@@ -159,7 +163,12 @@ public class TetrisCore : IGamePhase
         }
         if(!black_player.IsMoveable() && !white_player.IsMoveable())
         {
-            Filling();
+            fillingAcculator += time;
+            if (fillingAcculator > ENTIER_FILLING_TIME)
+            {
+                Filling();
+                fillingAcculator = 0;
+            }
         }
 
         //为渲染提供矩阵
@@ -737,7 +746,7 @@ public class TetrisCore : IGamePhase
                 cubes[cur_position.x, cur_position.y].color != player.tetromino_data.color - 2 &&
                 !cubes[cur_position.x, cur_position.y].is_background))
             {
-                return true;
+                return true; 
             }
         }
         return false;
