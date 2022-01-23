@@ -433,7 +433,7 @@ public class TetrisCore : IGamePhase
         }
         //填充
         int white_complete_line = 0;
-        for(int y = 0; y < 20; ++y)
+        for(int y = 0; y < size.y; ++y)
         {
             bool quit = false;
             for(int x = 0; x < size.x; ++x)
@@ -446,7 +446,7 @@ public class TetrisCore : IGamePhase
             white_complete_line++;
         }
         int black_complete_line = 0;
-        for(int y = 19; y >= 0; --y)
+        for(int y = size.y - 1; y >= 0; --y)
         {
             bool quit = false;
             for(int x = 0; x < size.x; ++x)
@@ -460,53 +460,18 @@ public class TetrisCore : IGamePhase
         }
 
         //界线附近的区域
-        int top = 20 - white_complete_line;
-        int bottom = black_complete_line - 1;
+        int top = size.y - black_complete_line;
+        int bottom = white_complete_line - 1;
         int traverse_y_size = top - bottom + 1;
         //搜索白色岛屿
-        TraverseCube[,] tcubes_white = new TraverseCube[size.x, traverse_y_size];
         List<Island> white_islands = new List<Island>();
-        for(int y = 0; y < traverse_y_size; ++y)
-        {
-            for(int x = 0; x < size.x; ++x)
-            {
-                if(tcubes_white[x, y].is_valid)           //已遍历则不再遍历
-                    continue;
-                if(cubes[x, bottom + y].color == Role.White)    //搜索到岛屿
-                {
-                    Island island = new Island(Role.White);
-                    TraverseIsland(x, y, bottom, traverse_y_size, in cubes[x, bottom + y].color, ref tcubes_white, ref island);
-                    if(!island.part_of_mainland)
-                        white_islands.Add(island);
-                }
-                tcubes_white[x, y].is_valid = true;
-            }
-        }
+        Traverse(bottom, traverse_y_size, Role.White, ref white_islands, false);
         //搜索黑色岛屿
-        TraverseCube[,] tcubes_black = new TraverseCube[size.x, traverse_y_size];
         List<Island> black_islands = new List<Island>();
-        for(int y = 0; y < traverse_y_size; ++y)
-        {
-            for(int x = 0; x < size.x; ++x)
-            {
-                if(tcubes_black[x, y].is_valid)           //已遍历则不再遍历
-                    continue;
-                if(cubes[x, bottom + y].color == Role.Black)    //搜索到岛屿
-                {
-                    Island island = new Island(Role.Black);
-                    TraverseIsland(x, y, bottom, traverse_y_size, in cubes[x, bottom + y].color, ref tcubes_black, ref island);
-                    if(!island.part_of_mainland)
-                        black_islands.Add(island);
-                }
-                tcubes_black[x, y].is_valid = true;
-            }
-        }
+        Traverse(bottom, traverse_y_size, Role.Black, ref black_islands, false);
         //白块被吃
         foreach(Island island in white_islands)
         {
-            if(island.tcubes.Count >= 4){
-                continue;
-            }
             for(int i = 0; i < island.tcubes.Count; ++i)
             {
                 Vector2Int pos = island.tcubes[i];
@@ -516,20 +481,54 @@ public class TetrisCore : IGamePhase
         //黑块被吃
         foreach(Island island in black_islands)
         {
-            if(island.tcubes.Count >= 4){
-                continue;
-            }
             for(int i = 0; i < island.tcubes.Count; ++i)
             {
                 Vector2Int pos = island.tcubes[i];
                 cubes[pos.x, pos.y].color = Role.White;   
             }
         }
-        if (white_islands.Count > 0 || black_islands.Count > 0)
-            Sinking(ref white_islands, ref black_islands);
+        //吃完后再次搜索有无需要沉底的岛屿
+        List<Island> sinking_white_island = new List<Island>();
+        Traverse(bottom, traverse_y_size, Role.White, ref sinking_white_island, true);
+        List<Island> sinking_black_island = new List<Island>();
+        Traverse(bottom, traverse_y_size, Role.Black, ref sinking_black_island, true);
+
+        if (sinking_white_island.Count > 0 || sinking_black_island.Count > 0)
+        {
+            Sinking(ref sinking_white_island, ref sinking_black_island);
+        }
         else
+        {
             NewRound();
+        }
         return false;
+    }
+
+    //遍历,生成Island
+    private void Traverse(int bottom, int y_size, Role island_color, ref List<Island> islands, bool is_sinking)
+    {
+        TraverseCube[,] tcubes = new TraverseCube[size.x, y_size];
+        for(int y = 0; y < y_size; ++y)
+        {
+            for(int x = 0; x < size.x; ++x)
+            {
+                if(tcubes[x, y].is_valid)           //已遍历则不再遍历
+                    continue;
+                if(cubes[x, bottom + y].color == island_color)    //搜索到岛屿
+                {
+                    Island island = new Island(island_color);
+                    TraverseIsland(x, y, bottom, y_size, in cubes[x, bottom + y].color, ref tcubes, ref island);
+                    if(!island.part_of_mainland)
+                    {
+                        if(is_sinking && island.tcubes.Count >= 4)
+                            islands.Add(island);
+                        else if(!is_sinking && island.tcubes.Count < 4)
+                            islands.Add(island);
+                    }
+                }
+                tcubes[x, y].is_valid = true;
+            }
+        }
     }
 
     private void TraverseIsland(int x, int y, int bottom, int y_size, in Role color, ref TraverseCube[,] tcubes, ref Island island)
@@ -569,20 +568,15 @@ public class TetrisCore : IGamePhase
     //下沉
     private bool Sinking(ref List<Island> white_islands, ref List<Island> black_islands)
     {
+        Debug.Log("Sinking !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
         //白块沉底
         foreach(Island island in white_islands)
         {
-            if(island.tcubes.Count < 4){
-                continue;
-            }
             IslandSinking(island, Role.White);
         }
         //黑块沉底
         foreach(Island island in black_islands)
         {
-            if(island.tcubes.Count < 4){
-                continue;
-            }
             IslandSinking(island, Role.Black);
         }
         NewRound();
@@ -593,42 +587,61 @@ public class TetrisCore : IGamePhase
     private void IslandSinking(Island island, Role color)
     {   
         Debug.Log("Sinking : " + color);
-        bool ground = false;
         int y_director = (color == Role.White) ? -1 : 1;
         Role reverse_color = (color == Role.White) ? Role.Black : Role.White;
-        while(!ground)
+        Vector2Int offset = Vector2Int.zero;
+        for (int i = 0; i < island.tcubes.Count; ++i)
+        {
+            cubes[island.tcubes[i].x, island.tcubes[i].y].is_background = false;
+        }
+        while(true)
         {   
-            for(int i = 0; i < island.tcubes.Count; ++i)
-            {
-                Vector2Int next_pos = island.tcubes[i];
-                next_pos.y += y_director;
-                switch(color)
-                {
-                    case Role.Black: ground = (next_pos.y >= 20); break;
-                    case Role.White: ground = (next_pos.y < 0); break;
-                }
-                if(ground)
-                    break;
-                if(cubes[next_pos.x, next_pos.y].color == color)
-                {
-                    ground = true;
-                    break;
-                }
-            }
-
+            offset.y += y_director;
+            if(IsSinkingGround(island, color, offset))
+                break;
             for(int i = 0; i < island.tcubes.Count; ++i)
             {
                 cubes[island.tcubes[i].x, island.tcubes[i].y].color = reverse_color;
-                var pos = island.tcubes[i];
-                pos.y += y_director;
+                cubes[island.tcubes[i].x, island.tcubes[i].y].is_background = true;
+                var pos = island.tcubes[i] + offset;
                 island.tcubes[i] = pos;
             }
             for(int i = 0; i < island.tcubes.Count; ++i)
             {
                 cubes[island.tcubes[i].x, island.tcubes[i].y].color = color;
+                cubes[island.tcubes[i].x, island.tcubes[i].y].is_background = false;
+            }
+            
+        }
+        for(int x = 0; x < size.x; ++x)
+        {
+            for(int y = 0; y < size.y; ++y)
+            {
+                cubes[x, y].is_background = true;
             }
         }
-        
+    }
+
+    private bool IsSinkingGround(Island island, Role color, Vector2Int offset)
+    {
+        for(int i = 0; i < island.tcubes.Count; ++i)
+        {
+            Vector2Int cur_position = island.tcubes[i] + offset;
+            bool out_of_index = false;
+            switch(color)
+                {
+                    case Role.Black: out_of_index = (island.tcubes[i].y >= size.y); break;
+                    case Role.White: out_of_index = (island.tcubes[i].y < 0); break;
+                }
+            if(out_of_index)
+                return true;
+            if((cubes[cur_position.x, cur_position.y].color == color &&
+                cubes[cur_position.x, cur_position.y].is_background))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     //判断触底
@@ -640,7 +653,7 @@ public class TetrisCore : IGamePhase
             bool out_of_index = false;
             switch(player.y_director)
             {
-                case 1: out_of_index = (cur_position.y >= 20); break;
+                case 1: out_of_index = (cur_position.y >= size.y); break;
                 case -1: out_of_index = (cur_position.y < 0); break;
             }
             if(out_of_index)
@@ -664,9 +677,10 @@ public class TetrisCore : IGamePhase
             Vector2Int cur_position = player.tetromino_data.cells[i] + player.tetromino_data.position;
             if(cur_position.x >= size.x || cur_position.x < 0)
                 return true;
-            if((cubes[cur_position.x, cur_position.y].color == player.tetromino_data.color &&
+            if((cubes[cur_position.x, cur_position.y].color == player.tetromino_data.color - 2 &&
                 cubes[cur_position.x, cur_position.y].is_background) ||
                 (cubes[cur_position.x, cur_position.y].color != player.tetromino_data.color &&
+                cubes[cur_position.x, cur_position.y].color != player.tetromino_data.color - 2 &&
                 !cubes[cur_position.x, cur_position.y].is_background))
             {
                 return true;
