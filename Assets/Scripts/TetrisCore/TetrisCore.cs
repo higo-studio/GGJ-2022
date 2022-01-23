@@ -10,7 +10,7 @@ struct Cube
 
 public struct PlayerHandle
 {
-    public const float CD_DURATION = 0.2f;
+    public const float CD_DURATION = 0.15f;
     public TetrominoData tetromino_data;
     public TetrominoData next_tetromino_data;
     public float curr_time;
