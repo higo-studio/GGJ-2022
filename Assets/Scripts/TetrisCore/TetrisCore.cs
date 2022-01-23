@@ -215,7 +215,7 @@ public class TetrisCore : IGamePhase
         }
         player.tetromino_data.position.x += offset.x;
 
-        var valid = !IsHorizontalOutOfIndex(ref player);
+        var valid = !IsOutOfIndex(ref player);
         if (!valid)
         {
             player.tetromino_data.position.x -= offset.x;
@@ -346,6 +346,7 @@ public class TetrisCore : IGamePhase
     #endregion
     void GenTData(out TetrominoData wd, out TetrominoData bd)
     {
+        var offset = 2;
         Tetromino white_t = (Tetromino)Random.Range(0, 7);
         Tetromino black_t = (Tetromino)Random.Range(0, 7);
         //去冲突
@@ -355,7 +356,7 @@ public class TetrisCore : IGamePhase
         }
         wd = new TetrominoData()
         {
-            position = new Vector2Int(size.x / 2, size.y - 4),
+            position = new Vector2Int(size.x / 2, size.y - offset),
             color = Role.FixiableWhite,
             tetromino = white_t,
             on_ground = false
@@ -365,7 +366,7 @@ public class TetrisCore : IGamePhase
         bd = new TetrominoData()
         {
             //position  color  tetromino  onground
-            position = new Vector2Int(size.x / 2, 4),
+            position = new Vector2Int(size.x / 2, offset - 2),
             color = Role.FexiableBlack,
             tetromino = black_t,
             on_ground = false
@@ -686,6 +687,23 @@ public class TetrisCore : IGamePhase
             }
         }
         return false;
+    }
+
+    private bool IsOutOfIndex(ref PlayerHandle player)
+    {
+        var IsVerticalOutofIndex = false;
+        for (int i = 0; i < 4; ++i)
+        {
+            Vector2Int cur_position = player.tetromino_data.cells[i] + player.tetromino_data.position;
+            if (cur_position.y < 0  || cur_position.y >= size.y)
+            {
+                IsVerticalOutofIndex = true;
+                break;
+            }
+        }
+
+        
+        return IsVerticalOutofIndex || IsHorizontalOutOfIndex(ref player);
     }
 
     private bool IsHorizontalOutOfIndex(ref PlayerHandle player)
