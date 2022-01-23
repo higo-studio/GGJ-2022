@@ -55,6 +55,14 @@ public class TetrisCore : IGamePhase
     private Cube[,] cubes;
     PlayerHandle black_player;
     PlayerHandle white_player;
+    private List<Island> fill_island;
+    private List<Island> sinking_island;
+
+    private bool isGameOver;
+    public bool IsGameOver
+    {
+        get => isGameOver;
+    }
 
     //初始化 平分地图
     public void Init(float step, Vector2Int size, int max_island)
@@ -104,8 +112,12 @@ public class TetrisCore : IGamePhase
     //每帧被调用
     public void Update(float time, PlayerInput[] input, ref Role[,] cells, ref TetrominoData[] nextTDatas)
     {
+        if (isGameOver) return;
         RevertActiveCells(ref black_player);
         RevertActiveCells(ref white_player);
+        
+        fill_island = null;
+        sinking_island = null;
 
         //move & rotate
         if (black_player.IsMoveable() && input[(int)Role.Black].IsValid)
@@ -359,6 +371,20 @@ public class TetrisCore : IGamePhase
         bd.Initialize();
     }
 
+    bool IsTDataValid(TetrominoData td, ref PlayerHandle player)
+    {
+        var cells = td.cells;
+        for(var i = 0; i < cells.Length; i++)
+        {
+            var pos = cells[i] + td.position;
+            if (cubes[pos.x, pos.y].color == player.tetromino_data.color)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     //新的一轮
     private void NewRound()
     {
@@ -372,6 +398,12 @@ public class TetrisCore : IGamePhase
 
         white_player.tetromino_data = white_player.next_tetromino_data;
         black_player.tetromino_data = black_player.next_tetromino_data;
+        if (!IsTDataValid(white_player.tetromino_data, ref white_player) || !IsTDataValid(black_player.tetromino_data, ref black_player))
+        {
+            GameOver();
+            return;
+        }
+        
 
         white_player.curr_time = 0;
         black_player.curr_time = 0;
@@ -467,6 +499,7 @@ public class TetrisCore : IGamePhase
             black_complete_line++;
         }
 
+        fill_island = new List<Island>();
         //界线附近的区域
         int top = size.y - black_complete_line;
         int bottom = white_complete_line - 1;
@@ -485,6 +518,7 @@ public class TetrisCore : IGamePhase
                 Vector2Int pos = island.tcubes[i];
                 cubes[pos.x, pos.y].color = Role.Black;   
             }
+            fill_island.Add(island);
         }
         //黑块被吃
         foreach(Island island in black_islands)
@@ -494,6 +528,7 @@ public class TetrisCore : IGamePhase
                 Vector2Int pos = island.tcubes[i];
                 cubes[pos.x, pos.y].color = Role.White;   
             }
+            fill_island.Add(island);
         }
         //吃完后再次搜索有无需要沉底的岛屿
         List<Island> sinking_white_island = new List<Island>();
@@ -522,15 +557,20 @@ public class TetrisCore : IGamePhase
             {
                 if(tcubes[x, y].is_valid)           //已遍历则不再遍历
                     continue;
+                if(bottom + y >= size.y || bottom + y < 0)
+                {
+                    tcubes[x, y].is_valid = true;
+                    continue;
+                }
                 if(cubes[x, bottom + y].color == island_color)    //搜索到岛屿
                 {
                     Island island = new Island(island_color);
                     TraverseIsland(x, y, bottom, y_size, in cubes[x, bottom + y].color, ref tcubes, ref island);
                     if(!island.part_of_mainland)
                     {
-                        if(is_sinking && island.tcubes.Count >= max_island)
+                        if(is_sinking && island.tcubes.Count > max_island)
                             islands.Add(island);
-                        else if(!is_sinking && island.tcubes.Count < max_island)
+                        else if(!is_sinking && island.tcubes.Count <= max_island)
                             islands.Add(island);
                     }
                 }
@@ -545,6 +585,11 @@ public class TetrisCore : IGamePhase
         {
             return;
         }
+        if(y + bottom >= size.y || y + bottom < 0)
+        {
+            tcubes[x, y].is_valid = true;
+            return;
+        }
         if(tcubes[x, y].is_valid){
             return;
         }
@@ -556,10 +601,14 @@ public class TetrisCore : IGamePhase
             {
                 if(y >= y_size - 1)
                     island.part_of_mainland = true;
+                if(y + bottom + 1 >= size.y)
+                    island.part_of_mainland = true;
             }
             else
             {
                 if(y <= 0)
+                    island.part_of_mainland = true;
+                if(y + bottom - 1 <= 0)
                     island.part_of_mainland = true;
             }
             //深度遍历
@@ -576,16 +625,18 @@ public class TetrisCore : IGamePhase
     //下沉
     private bool Sinking(ref List<Island> white_islands, ref List<Island> black_islands)
     {
-        Debug.Log("Sinking !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
+        sinking_island = new List<Island>();
         //白块沉底
         foreach(Island island in white_islands)
         {
             IslandSinking(island, Role.White);
+            sinking_island.Add(island);
         }
         //黑块沉底
         foreach(Island island in black_islands)
         {
             IslandSinking(island, Role.Black);
+            sinking_island.Add(island);
         }
         NewRound();
         return false;
@@ -717,5 +768,16 @@ public class TetrisCore : IGamePhase
     private void GameOver()
     {
         Debug.Log("玩完了!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        isGameOver = true;
+    }
+
+    public ref List<Island> GetTillIslands()
+    {
+        return ref fill_island;
+    }
+
+    public ref List<Island> GetSinkingIslands()
+    {
+        return ref sinking_island;
     }
 }
