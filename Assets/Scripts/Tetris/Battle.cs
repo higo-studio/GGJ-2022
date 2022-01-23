@@ -6,6 +6,7 @@ public class Battle : MonoBehaviour
     public Vector2Int MapSize;
     [Range(0.5f, 2f)]
     public float Step = 1f;
+    public int Max_Island = 6;
     public TBoard[] Boards;
     public int[] Scores;
     public Tilemap[] NextTilemaps;
@@ -36,7 +37,7 @@ public class Battle : MonoBehaviour
         NextTDatas = new TetrominoData[2];
         RenderCells = new Role[MapSize.x, MapSize.y];
         inputs = new PlayerInput[2];
-        core.Init(Step, MapSize);
+        core.Init(Step, MapSize, Max_Island);
     }
 
     private void Update()

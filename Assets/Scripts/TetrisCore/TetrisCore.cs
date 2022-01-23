@@ -49,16 +49,19 @@ public class TetrisCore : IGamePhase
 {
     public float step_time { get; private set; }
     private float curr_normal_time = 0;
+    public int max_island = 6;
+
     private Vector2Int size;
     private Cube[,] cubes;
     PlayerHandle black_player;
     PlayerHandle white_player;
 
     //初始化 平分地图
-    public void Init(float step, Vector2Int size)
+    public void Init(float step, Vector2Int size, int max_island)
     {
         step_time = step;
         this.size = size;
+        this.max_island = max_island;
         //初始化方块场景
         cubes = new Cube[size.x, size.y];
         for(int i = 0; i < size.y / 2; ++i)
@@ -525,9 +528,9 @@ public class TetrisCore : IGamePhase
                     TraverseIsland(x, y, bottom, y_size, in cubes[x, bottom + y].color, ref tcubes, ref island);
                     if(!island.part_of_mainland)
                     {
-                        if(is_sinking && island.tcubes.Count >= 4)
+                        if(is_sinking && island.tcubes.Count >= max_island)
                             islands.Add(island);
-                        else if(!is_sinking && island.tcubes.Count < 4)
+                        else if(!is_sinking && island.tcubes.Count < max_island)
                             islands.Add(island);
                     }
                 }

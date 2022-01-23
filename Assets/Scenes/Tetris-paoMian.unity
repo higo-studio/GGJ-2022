@@ -404,6 +404,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MapSize: {x: 10, y: 30}
   Step: 1
+  Max_Island: 6
   Boards:
   - {fileID: 2126037730}
   - {fileID: 1887623655}
