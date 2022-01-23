@@ -50,13 +50,13 @@ public class Battle : MonoBehaviour
         core.OnFilled += () =>
         {
             Debug.Log("OnFilled");
-            FillAudio.Play();
+            FillAudio.PlayOneShot(FillAudio.clip);
         };
 
         core.OnGrounded += (d) =>
         {
             Debug.Log("OnGrounded");
-            GroundAudio.Play();
+            GroundAudio.PlayOneShot(GroundAudio.clip);
         };
         isRunning = true;
         result.gameObject.SetActive(false);
