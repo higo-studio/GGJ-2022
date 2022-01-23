@@ -43,6 +43,7 @@ public class Battle : MonoBehaviour
         RenderCells = new Role[MapSize.x, MapSize.y];
         inputs = new PlayerInput[2];
         core.Init(Step, MapSize, Max_Island);
+        isRunning = true;
     }
 
     private void Update()
@@ -53,6 +54,11 @@ public class Battle : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (core.IsGameOver)
+        {
+            isRunning = false;
+            Restart();
+        }
         if (!isRunning) return;
         core.Update(Time.fixedDeltaTime, inputs, ref RenderCells, ref NextTDatas);
         Scores[0] = 0;
@@ -82,12 +88,6 @@ public class Battle : MonoBehaviour
         RefreshNextView();
         inputs[0] = default;
         inputs[1] = default;  
-        
-        if (core.IsGameOver)
-        {
-            isRunning = false;
-            Restart();
-        }
 
         var factor = Mathf.Clamp01(core.RoundCount / SpeedUpTotalRound);
         Step = MinStep + (MaxStep - MinStep) * Curve.Evaluate(1 - factor);
